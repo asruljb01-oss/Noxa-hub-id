@@ -1,0 +1,2273 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>NOXA HUB - Advanced Digital Platform</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary: #1a1f3a;
+            --secondary: #16213e;
+            --accent: #00d4ff;
+            --danger: #ff3366;
+            --success: #00ff88;
+            --warning: #ffaa00;
+            --text: #ffffff;
+            --text-dim: #b0b5c0;
+            --bg-dark: #0f1428;
+        }
+
+        html, body { height: 100%; width: 100%; }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--bg-dark) 0%, var(--primary) 100%);
+            background-attachment: fixed;
+            color: var(--text);
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: repeating-linear-gradient(0deg, rgba(0,0,0,0.08), rgba(0,0,0,0.08) 1px, transparent 1px, transparent 2px);
+            pointer-events: none;
+            z-index: 1;
+            animation: scanlines 10s linear infinite;
+        }
+
+        @keyframes scanlines {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(10px); }
+        }
+
+        /* ═══════════ HEADER ═══════════ */
+        .header {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: 65px;
+            background: rgba(15, 20, 40, 0.97);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0,212,255,0.25);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 200;
+            box-shadow: 0 4px 30px rgba(0,212,255,0.12);
+        }
+
+        .header-left { display: flex; align-items: center; gap: 12px; }
+
+        .hamburger {
+            width: 38px; height: 38px;
+            border-radius: 8px;
+            background: rgba(0,212,255,0.08);
+            border: 1px solid rgba(0,212,255,0.25);
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            gap: 5px; cursor: pointer; transition: all 0.3s;
+        }
+        .hamburger:hover { background: rgba(0,212,255,0.18); border-color: var(--accent); }
+        .hamburger span { display: block; width: 18px; height: 2px; background: var(--accent); border-radius: 2px; transition: all 0.3s; }
+
+        .header-logo {
+            font-size: 22px; font-weight: 800;
+            background: linear-gradient(135deg, var(--accent), #ff3366);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+            letter-spacing: 1px;
+        }
+
+        .header-badge {
+            font-size: 10px; padding: 2px 8px;
+            background: linear-gradient(135deg, var(--accent), #ff3366);
+            color: #000; border-radius: 20px; font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .header-icons { display: flex; align-items: center; gap: 10px; }
+
+        .header-icon {
+            width: 38px; height: 38px; border-radius: 50%;
+            background: rgba(0,212,255,0.08);
+            border: 1px solid rgba(0,212,255,0.2);
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: all 0.3s; font-size: 16px;
+            position: relative;
+        }
+        .header-icon:hover { background: rgba(0,212,255,0.2); transform: translateY(-2px); box-shadow: 0 0 18px rgba(0,212,255,0.3); }
+        .badge-dot {
+            position: absolute; top: 3px; right: 3px;
+            width: 8px; height: 8px; border-radius: 50%;
+            background: var(--danger); border: 1px solid var(--bg-dark);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse { 0%,100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.3); opacity: 0.7; } }
+
+        /* ═══════════ SIDEBAR ═══════════ */
+        .sidebar {
+            position: fixed; left: 0; top: 65px;
+            width: 270px; height: calc(100vh - 130px);
+            background: rgba(15, 20, 40, 0.98);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(0,212,255,0.15);
+            padding: 15px 12px; overflow-y: auto;
+            transform: translateX(-280px); transition: all 0.35s cubic-bezier(0.4,0,0.2,1);
+            z-index: 150; scrollbar-width: thin; scrollbar-color: var(--accent) transparent;
+        }
+        .sidebar.show { transform: translateX(0); }
+
+        .sidebar-section-label {
+            font-size: 10px; color: var(--text-dim); text-transform: uppercase;
+            letter-spacing: 2px; padding: 10px 10px 5px; margin-top: 8px;
+        }
+
+        .sidebar-item {
+            padding: 11px 14px; margin-bottom: 4px;
+            background: rgba(0,212,255,0.03);
+            border: 1px solid rgba(0,212,255,0.07);
+            border-radius: 8px; cursor: pointer;
+            transition: all 0.25s; display: flex; align-items: center; gap: 10px;
+            font-size: 13px; font-weight: 500; color: var(--text-dim);
+        }
+        .sidebar-item:hover, .sidebar-item.active {
+            background: rgba(0,212,255,0.12);
+            border-color: rgba(0,212,255,0.4);
+            color: var(--accent); transform: translateX(4px);
+        }
+        .sidebar-item-icon { font-size: 16px; }
+
+        .sidebar-overlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.5); z-index: 140;
+        }
+        .sidebar-overlay.show { display: block; }
+
+        /* ═══════════ CONTAINER ═══════════ */
+        .container {
+            margin-top: 65px; padding: 20px 18px 90px;
+            max-width: 1400px; margin-left: auto; margin-right: auto;
+            position: relative; z-index: 2;
+        }
+
+        /* ═══════════ PAGES ═══════════ */
+        .page { display: none; animation: fadeUp 0.4s ease; }
+        .page.active { display: block; }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* ═══════════ CARDS ═══════════ */
+        .welcome-card {
+            background: linear-gradient(135deg, rgba(26,31,58,0.85), rgba(22,33,62,0.85));
+            border: 1px solid rgba(0,212,255,0.25);
+            border-radius: 16px; padding: 25px 28px; margin-bottom: 25px;
+            position: relative; overflow: hidden;
+        }
+        .welcome-card::before {
+            content: '';
+            position: absolute; top: -60px; right: -60px;
+            width: 200px; height: 200px;
+            background: radial-gradient(circle, rgba(0,212,255,0.12) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        .welcome-title { font-size: 24px; font-weight: 700; margin-bottom: 5px; }
+        .welcome-sub { font-size: 13px; color: var(--text-dim); }
+        .welcome-info {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 15px; margin-top: 20px; padding-top: 18px;
+            border-top: 1px solid rgba(0,212,255,0.15);
+        }
+        .info-item { display: flex; flex-direction: column; gap: 3px; }
+        .info-label { font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; }
+        .info-value { font-size: 13px; font-weight: 600; color: var(--accent); }
+
+        .section-title {
+            font-size: 17px; font-weight: 700; margin: 30px 0 15px;
+            color: var(--accent); display: flex; align-items: center; gap: 8px;
+        }
+        .section-title::after {
+            content: ''; flex: 1; height: 1px;
+            background: linear-gradient(90deg, rgba(0,212,255,0.3), transparent);
+        }
+
+        /* ═══════════ QUICK ACCESS GRID ═══════════ */
+        .grid-cards {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 12px; margin-bottom: 25px;
+        }
+        .card {
+            background: linear-gradient(135deg, rgba(26,31,58,0.6), rgba(22,33,62,0.6));
+            border: 1px solid rgba(0,212,255,0.15); border-radius: 12px;
+            padding: 18px 14px; cursor: pointer; transition: all 0.3s;
+            text-align: center; position: relative; overflow: hidden;
+        }
+        .card::before {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(135deg, rgba(0,212,255,0.05), rgba(255,51,102,0.05));
+            opacity: 0; transition: opacity 0.3s;
+        }
+        .card:hover { border-color: var(--accent); transform: translateY(-5px); box-shadow: 0 12px 30px rgba(0,212,255,0.2); }
+        .card:hover::before { opacity: 1; }
+        .card-icon { font-size: 30px; margin-bottom: 8px; }
+        .card-title { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+        .card-desc { font-size: 10px; color: var(--text-dim); line-height: 1.4; }
+
+        /* ═══════════ STATS ═══════════ */
+        .stats-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 12px; margin-bottom: 25px;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, rgba(0,212,255,0.08), rgba(255,51,102,0.04));
+            border: 1px solid rgba(0,212,255,0.18); border-radius: 12px; padding: 18px;
+            position: relative; overflow: hidden; transition: all 0.3s;
+        }
+        .stat-card:hover { border-color: rgba(0,212,255,0.4); transform: translateY(-3px); }
+        .stat-card::after {
+            content: ''; position: absolute; bottom: 0; left: 0;
+            height: 2px; width: 60%; background: linear-gradient(90deg, var(--accent), transparent);
+        }
+        .stat-label { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; }
+        .stat-value { font-size: 26px; font-weight: 800; color: var(--accent); margin-bottom: 4px; }
+        .stat-change { font-size: 11px; color: var(--success); }
+        .stat-change.down { color: var(--danger); }
+
+        /* ═══════════ FEATURE LIST ═══════════ */
+        .feature-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; }
+        .feature-item {
+            background: rgba(0,212,255,0.04); border: 1px solid rgba(0,212,255,0.15);
+            border-radius: 12px; padding: 18px; transition: all 0.3s; cursor: pointer;
+        }
+        .feature-item:hover { border-color: var(--accent); background: rgba(0,212,255,0.1); transform: translateY(-3px); box-shadow: 0 10px 25px rgba(0,212,255,0.15); }
+        .feature-icon { font-size: 26px; margin-bottom: 8px; }
+        .feature-title { font-weight: 600; margin-bottom: 6px; color: var(--accent); font-size: 14px; }
+        .feature-desc { font-size: 12px; color: var(--text-dim); line-height: 1.5; }
+
+        /* ═══════════ BOTTOM NAV ═══════════ */
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; right: 0; height: 65px;
+            background: rgba(10, 14, 30, 0.97);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(0,212,255,0.18);
+            display: flex; align-items: center; justify-content: space-around;
+            z-index: 200; box-shadow: 0 -5px 30px rgba(0,212,255,0.1);
+        }
+        .nav-item {
+            display: flex; flex-direction: column; align-items: center; gap: 3px;
+            cursor: pointer; transition: all 0.3s; padding: 8px 12px;
+            color: var(--text-dim); border-radius: 10px; min-width: 55px;
+        }
+        .nav-item:hover, .nav-item.active { color: var(--accent); background: rgba(0,212,255,0.1); }
+        .nav-item-icon { font-size: 22px; }
+        .nav-item-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+
+        /* ═══════════ MODALS ═══════════ */
+        .modal {
+            display: none; position: fixed; z-index: 500;
+            inset: 0; background: rgba(0,0,0,0.82);
+            backdrop-filter: blur(6px); align-items: center; justify-content: center;
+        }
+        .modal.show { display: flex; animation: fadeIn 0.25s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .modal-content {
+            background: linear-gradient(135deg, #0f1428 0%, #1a1f3a 100%);
+            border: 1px solid rgba(0,212,255,0.3); border-radius: 16px;
+            padding: 28px; max-width: 560px; width: 92%;
+            max-height: 85vh; overflow-y: auto;
+            animation: slideUp 0.3s cubic-bezier(0.4,0,0.2,1);
+            scrollbar-width: thin; scrollbar-color: var(--accent) transparent;
+        }
+        @keyframes slideUp { from { transform: translateY(25px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .modal-header {
+            font-size: 20px; font-weight: 700; margin-bottom: 20px;
+            color: var(--accent); display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid rgba(0,212,255,0.15); padding-bottom: 14px;
+        }
+        .modal-close { cursor: pointer; font-size: 26px; color: var(--text-dim); transition: all 0.3s; }
+        .modal-close:hover { color: var(--danger); transform: scale(1.2) rotate(90deg); }
+        .modal-body { color: var(--text); line-height: 1.75; }
+        .modal-body p { margin-bottom: 12px; font-size: 13px; }
+        .modal-body ul { list-style: none; margin: 12px 0; }
+        .modal-body li { padding: 9px 0; padding-left: 20px; position: relative; font-size: 13px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .modal-body li::before { content: '▶'; position: absolute; left: 0; color: var(--accent); font-size: 10px; top: 11px; }
+
+        /* ═══════════ BUTTONS ═══════════ */
+        .btn {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 9px 18px; border: none; border-radius: 8px;
+            color: #000; cursor: pointer; font-weight: 700; font-size: 13px;
+            transition: all 0.3s; margin: 5px 5px 0 0; font-family: 'Poppins', sans-serif;
+        }
+        .btn-primary { background: linear-gradient(135deg, var(--accent), #0099cc); }
+        .btn-danger { background: linear-gradient(135deg, var(--danger), #cc0033); color: #fff; }
+        .btn-success { background: linear-gradient(135deg, var(--success), #00cc66); }
+        .btn-warning { background: linear-gradient(135deg, var(--warning), #cc8800); }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.3); opacity: 0.92; }
+
+        /* ═══════════ TERMINAL / CODE ═══════════ */
+        .terminal {
+            background: rgba(0,0,0,0.85); border-radius: 10px; padding: 16px;
+            font-family: 'Courier Prime', monospace; font-size: 12px; color: #00ff88;
+            min-height: 120px; border: 1px solid rgba(0,212,255,0.3);
+            max-height: 300px; overflow-y: auto; white-space: pre-wrap; word-break: break-all;
+        }
+        .terminal-line { margin-bottom: 3px; }
+        .terminal-line.error { color: var(--danger); }
+        .terminal-line.warn { color: var(--warning); }
+        .terminal-line.info { color: var(--accent); }
+
+        /* ═══════════ PROGRESS BAR ═══════════ */
+        .progress-wrap { margin: 12px 0; }
+        .progress-label { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-dim); margin-bottom: 6px; }
+        .progress-bar { height: 6px; background: rgba(255,255,255,0.08); border-radius: 6px; overflow: hidden; }
+        .progress-fill { height: 100%; border-radius: 6px; transition: width 1s ease; }
+        .fill-accent { background: linear-gradient(90deg, var(--accent), #0099cc); }
+        .fill-success { background: linear-gradient(90deg, var(--success), #00cc66); }
+        .fill-danger { background: linear-gradient(90deg, var(--danger), #cc0033); }
+        .fill-warning { background: linear-gradient(90deg, var(--warning), #cc8800); }
+
+        /* ═══════════ TABLE ═══════════ */
+        .table-wrap { overflow-x: auto; border-radius: 10px; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        thead tr { background: rgba(0,212,255,0.12); }
+        th { padding: 12px 14px; text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--accent); font-weight: 600; }
+        td { padding: 12px 14px; border-bottom: 1px solid rgba(255,255,255,0.05); color: var(--text-dim); }
+        tbody tr:hover { background: rgba(0,212,255,0.05); }
+        tbody tr:hover td { color: var(--text); }
+
+        /* ═══════════ TAGS / BADGES ═══════════ */
+        .tag {
+            display: inline-block; padding: 3px 10px; border-radius: 20px;
+            font-size: 11px; font-weight: 600; margin: 2px;
+        }
+        .tag-accent { background: rgba(0,212,255,0.15); color: var(--accent); border: 1px solid rgba(0,212,255,0.3); }
+        .tag-success { background: rgba(0,255,136,0.12); color: var(--success); border: 1px solid rgba(0,255,136,0.3); }
+        .tag-danger { background: rgba(255,51,102,0.12); color: var(--danger); border: 1px solid rgba(255,51,102,0.3); }
+        .tag-warning { background: rgba(255,170,0,0.12); color: var(--warning); border: 1px solid rgba(255,170,0,0.3); }
+
+        /* ═══════════ VPS CARDS ═══════════ */
+        .vps-card {
+            background: rgba(26,31,58,0.7); border: 1px solid rgba(0,212,255,0.15);
+            border-radius: 12px; padding: 18px; margin-bottom: 12px; transition: all 0.3s;
+        }
+        .vps-card:hover { border-color: rgba(0,212,255,0.35); }
+        .vps-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+        .vps-name { font-weight: 700; font-size: 15px; }
+        .vps-status { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; }
+        .dot-green { background: var(--success); box-shadow: 0 0 8px var(--success); animation: pulse 2s infinite; }
+        .dot-yellow { background: var(--warning); box-shadow: 0 0 8px var(--warning); animation: pulse 2s infinite; }
+        .dot-red { background: var(--danger); box-shadow: 0 0 8px var(--danger); }
+        .vps-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .vps-meta-item { font-size: 12px; color: var(--text-dim); }
+        .vps-actions { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+        .vps-btn { padding: 6px 14px; border-radius: 6px; border: none; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.25s; font-family: 'Poppins', sans-serif; }
+        .vps-btn-start { background: rgba(0,255,136,0.15); color: var(--success); border: 1px solid rgba(0,255,136,0.3); }
+        .vps-btn-stop { background: rgba(255,51,102,0.15); color: var(--danger); border: 1px solid rgba(255,51,102,0.3); }
+        .vps-btn-restart { background: rgba(255,170,0,0.15); color: var(--warning); border: 1px solid rgba(255,170,0,0.3); }
+        .vps-btn-console { background: rgba(0,212,255,0.12); color: var(--accent); border: 1px solid rgba(0,212,255,0.3); }
+        .vps-btn:hover { transform: translateY(-2px); opacity: 0.85; }
+
+        /* ═══════════ NEWS CARD ═══════════ */
+        .news-card {
+            background: rgba(26,31,58,0.7); border: 1px solid rgba(0,212,255,0.15);
+            border-radius: 12px; padding: 18px; margin-bottom: 12px;
+            cursor: pointer; transition: all 0.3s; display: flex; gap: 15px; align-items: flex-start;
+        }
+        .news-card:hover { border-color: rgba(0,212,255,0.35); transform: translateX(4px); }
+        .news-icon-wrap { font-size: 28px; flex-shrink: 0; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; background: rgba(0,212,255,0.08); border-radius: 10px; }
+        .news-content { flex: 1; }
+        .news-title { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+        .news-excerpt { font-size: 12px; color: var(--text-dim); line-height: 1.5; margin-bottom: 8px; }
+        .news-meta { display: flex; gap: 12px; font-size: 11px; color: var(--text-dim); }
+
+        /* ═══════════ BUG CENTER ═══════════ */
+        .bug-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+        .bug-card {
+            background: rgba(255,51,102,0.06); border: 1px solid rgba(255,51,102,0.2);
+            border-radius: 12px; padding: 18px; cursor: pointer; transition: all 0.3s; text-align: center;
+        }
+        .bug-card:hover { background: rgba(255,51,102,0.14); border-color: var(--danger); transform: translateY(-4px); box-shadow: 0 10px 25px rgba(255,51,102,0.2); }
+        .bug-icon { font-size: 32px; margin-bottom: 8px; }
+        .bug-name { font-size: 13px; font-weight: 600; margin-bottom: 4px; color: var(--danger); }
+        .bug-desc { font-size: 11px; color: var(--text-dim); }
+
+        /* ═══════════ TEAM CARD ═══════════ */
+        .team-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px; }
+        .team-card {
+            background: rgba(26,31,58,0.7); border: 1px solid rgba(0,212,255,0.15);
+            border-radius: 14px; padding: 22px; text-align: center; transition: all 0.3s;
+        }
+        .team-card:hover { border-color: var(--accent); transform: translateY(-5px); box-shadow: 0 12px 30px rgba(0,212,255,0.15); }
+        .team-avatar { width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), #ff3366); display: flex; align-items: center; justify-content: center; font-size: 28px; margin: 0 auto 12px; border: 2px solid rgba(0,212,255,0.4); }
+        .team-name { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+        .team-role { font-size: 11px; color: var(--accent); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+        .team-desc { font-size: 12px; color: var(--text-dim); line-height: 1.5; margin-bottom: 12px; }
+        .team-socials { display: flex; gap: 8px; justify-content: center; }
+        .social-btn { width: 30px; height: 30px; border-radius: 6px; border: 1px solid rgba(0,212,255,0.3); background: rgba(0,212,255,0.08); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; transition: all 0.2s; }
+        .social-btn:hover { background: rgba(0,212,255,0.2); transform: scale(1.15); }
+
+        /* ═══════════ FINANCE ═══════════ */
+        .balance-card {
+            background: linear-gradient(135deg, rgba(0,212,255,0.15), rgba(255,51,102,0.1));
+            border: 1px solid rgba(0,212,255,0.3); border-radius: 16px; padding: 24px; margin-bottom: 20px;
+        }
+        .balance-label { font-size: 12px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+        .balance-amount { font-size: 36px; font-weight: 800; color: var(--accent); margin-bottom: 6px; }
+        .balance-sub { font-size: 12px; color: var(--success); }
+        .tx-list { margin-top: 15px; }
+        .tx-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .tx-left { display: flex; align-items: center; gap: 12px; }
+        .tx-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+        .tx-info { display: flex; flex-direction: column; gap: 2px; }
+        .tx-name { font-size: 13px; font-weight: 600; }
+        .tx-date { font-size: 11px; color: var(--text-dim); }
+        .tx-amount { font-size: 14px; font-weight: 700; }
+        .tx-amount.plus { color: var(--success); }
+        .tx-amount.minus { color: var(--danger); }
+
+        /* ═══════════ BUILDER ═══════════ */
+        .build-step {
+            background: rgba(26,31,58,0.6); border: 1px solid rgba(0,212,255,0.15);
+            border-radius: 12px; padding: 18px; margin-bottom: 12px;
+            display: flex; gap: 15px; align-items: flex-start;
+        }
+        .step-num {
+            width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
+            background: linear-gradient(135deg, var(--accent), #0099cc);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 800; font-size: 14px; color: #000;
+        }
+        .step-content { flex: 1; }
+        .step-title { font-weight: 700; font-size: 14px; margin-bottom: 4px; }
+        .step-desc { font-size: 12px; color: var(--text-dim); }
+
+        /* ═══════════ INPUT ═══════════ */
+        .input-group { margin-bottom: 15px; }
+        .input-label { font-size: 12px; color: var(--text-dim); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.8px; }
+        .input-field {
+            width: 100%; padding: 10px 14px; border-radius: 8px;
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(0,212,255,0.2);
+            color: var(--text); font-size: 13px; font-family: 'Poppins', sans-serif;
+            transition: border-color 0.3s;
+        }
+        .input-field:focus { outline: none; border-color: var(--accent); background: rgba(0,212,255,0.05); }
+        select.input-field option { background: var(--primary); }
+
+        /* ═══════════ DASHBOARD ═══════════ */
+        .dash-chart {
+            background: rgba(26,31,58,0.7); border: 1px solid rgba(0,212,255,0.15);
+            border-radius: 12px; padding: 18px; margin-bottom: 15px;
+        }
+        .dash-chart-title { font-size: 13px; color: var(--text-dim); margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.8px; }
+        .bar-chart { display: flex; align-items: flex-end; gap: 8px; height: 100px; }
+        .bar {
+            flex: 1; background: linear-gradient(180deg, var(--accent), rgba(0,212,255,0.3));
+            border-radius: 4px 4px 0 0; min-width: 20px; position: relative;
+            transition: all 0.5s ease; cursor: pointer;
+        }
+        .bar:hover { filter: brightness(1.3); }
+        .bar-label { position: absolute; bottom: -20px; left: 50%; transform: translateX(-50%); font-size: 10px; color: var(--text-dim); white-space: nowrap; }
+        .bar-val { position: absolute; top: -18px; left: 50%; transform: translateX(-50%); font-size: 10px; color: var(--accent); white-space: nowrap; font-weight: 700; }
+        .chart-x { display: flex; gap: 8px; padding-top: 25px; }
+        .chart-x span { flex: 1; font-size: 10px; text-align: center; color: var(--text-dim); }
+
+        /* ═══════════ FLOATING PARTICLES ═══════════ */
+        .particle {
+            position: fixed; width: 3px; height: 3px; border-radius: 50%;
+            background: rgba(0,212,255,0.4); pointer-events: none; z-index: 0;
+            animation: floatParticle linear infinite;
+        }
+        @keyframes floatParticle { 0% { transform: translateY(100vh) translateX(0); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateY(-100px) translateX(50px); opacity: 0; } }
+
+        /* ═══════════ SHOLAT ═══════════ */
+        .sholat-card {
+            background: linear-gradient(135deg, rgba(26,31,58,0.8), rgba(22,33,62,0.8));
+            border: 1px solid rgba(0,212,255,0.2); border-radius: 12px;
+            padding: 16px 18px; display: flex; align-items: center;
+            justify-content: space-between; margin-bottom: 8px; transition: all 0.3s;
+        }
+        .sholat-card.active-prayer { border-color: var(--accent); background: linear-gradient(135deg, rgba(0,212,255,0.12), rgba(22,33,62,0.8)); }
+        .sholat-name { font-weight: 700; font-size: 15px; }
+        .sholat-time { font-size: 20px; font-weight: 800; color: var(--accent); }
+        .sholat-countdown { font-size: 11px; color: var(--text-dim); }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container { padding: 15px 14px 85px; }
+            .grid-cards { grid-template-columns: repeat(3, 1fr); }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .welcome-info { grid-template-columns: repeat(2, 1fr); }
+            .team-grid { grid-template-columns: repeat(2, 1fr); }
+            .bug-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 480px) {
+            .grid-cards { grid-template-columns: repeat(2, 1fr); }
+            .bug-grid { grid-template-columns: 1fr 1fr; }
+            .balance-amount { font-size: 28px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- FLOATING PARTICLES -->
+<div id="particles"></div>
+
+<!-- SIDEBAR OVERLAY -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<!-- HEADER -->
+<div class="header">
+    <div class="header-left">
+        <div class="hamburger" onclick="toggleSidebar()">
+            <span></span><span></span><span></span>
+        </div>
+        <div class="header-logo">NOXA HUB</div>
+        <span class="header-badge">v2.0</span>
+    </div>
+    <div class="header-icons">
+        <div class="header-icon" onclick="openModal('weatherModal')" title="Weather">🌤</div>
+        <div class="header-icon" onclick="openModal('musicModal')" title="Music">🎵</div>
+        <div class="header-icon" onclick="openModal('notifModal')" title="Notifications">
+            🔔<span class="badge-dot"></span>
+        </div>
+        <div class="header-icon" onclick="openModal('profileModal')" title="Profile">👤</div>
+    </div>
+</div>
+
+<!-- SIDEBAR -->
+<div class="sidebar" id="sidebar">
+    <div class="sidebar-section-label">Main</div>
+    <div class="sidebar-item active" onclick="showPage('home')"><span class="sidebar-item-icon">🏠</span> Home</div>
+    <div class="sidebar-item" onclick="showPage('dashboard')"><span class="sidebar-item-icon">📊</span> Dashboard</div>
+    <div class="sidebar-item" onclick="showPage('tools')"><span class="sidebar-item-icon">🛠</span> Tools Center</div>
+
+    <div class="sidebar-section-label">Services</div>
+    <div class="sidebar-item" onclick="showPage('hosting')"><span class="sidebar-item-icon">☁</span> Hosting Center</div>
+    <div class="sidebar-item" onclick="showPage('finance')"><span class="sidebar-item-icon">💰</span> Finance Center</div>
+    <div class="sidebar-item" onclick="showPage('vps')"><span class="sidebar-item-icon">🖥</span> VPS Manager</div>
+    <div class="sidebar-item" onclick="showPage('builder')"><span class="sidebar-item-icon">📦</span> Flutter Builder</div>
+
+    <div class="sidebar-section-label">Community</div>
+    <div class="sidebar-item" onclick="showPage('bugcenter')"><span class="sidebar-item-icon">🐞</span> Bug Center</div>
+    <div class="sidebar-item" onclick="showPage('news')"><span class="sidebar-item-icon">📢</span> News Center</div>
+    <div class="sidebar-item" onclick="showPage('team')"><span class="sidebar-item-icon">👥</span> Team NOXA</div>
+
+    <div class="sidebar-section-label">Account</div>
+    <div class="sidebar-item" onclick="openModal('profileModal')"><span class="sidebar-item-icon">👤</span> Profile</div>
+    <div class="sidebar-item" onclick="openModal('settingsModal')"><span class="sidebar-item-icon">⚙</span> Settings</div>
+    <div class="sidebar-item" onclick="openModal('helpModal')"><span class="sidebar-item-icon">❓</span> Help Center</div>
+    <div class="sidebar-item" onclick="openModal('contactModal')"><span class="sidebar-item-icon">📞</span> Contact Admin</div>
+    <div class="sidebar-item" style="color:var(--danger)" onclick="logout()"><span class="sidebar-item-icon">🚪</span> Logout</div>
+</div>
+
+<!-- MAIN CONTAINER -->
+<div class="container" id="mainContainer">
+
+    <!-- ════════════════ HOME PAGE ════════════════ -->
+    <div id="homePage" class="page active">
+        <div class="welcome-card">
+            <div class="welcome-title">Welcome Back, NOXA! 👋</div>
+            <div class="welcome-sub">Advanced Digital Platform — All systems operational</div>
+            <div class="welcome-info">
+                <div class="info-item"><div class="info-label">Username</div><div class="info-value">NOXA</div></div>
+                <div class="info-item"><div class="info-label">Role</div><div class="info-value">👑 Owner</div></div>
+                <div class="info-item"><div class="info-label">Status</div><div class="info-value">🌟 Premium</div></div>
+                <div class="info-item"><div class="info-label">Level</div><div class="info-value">Lv.25 (80%)</div></div>
+                <div class="info-item"><div class="info-label">Login</div><div class="info-value" id="lastLogin">—</div></div>
+                <div class="info-item"><div class="info-label">IP</div><div class="info-value">192.168.x.x</div></div>
+            </div>
+        </div>
+
+        <div class="section-title">⚡ Quick Access</div>
+        <div class="grid-cards">
+            <div class="card" onclick="showPage('finance')"><div class="card-icon">💰</div><div class="card-title">Finance</div><div class="card-desc">Manage transactions</div></div>
+            <div class="card" onclick="showPage('hosting')"><div class="card-icon">☁</div><div class="card-title">Hosting</div><div class="card-desc">Web management</div></div>
+            <div class="card" onclick="showPage('vps')"><div class="card-icon">🖥</div><div class="card-title">VPS</div><div class="card-desc">Server control</div></div>
+            <div class="card" onclick="showPage('bugcenter')"><div class="card-icon">🐞</div><div class="card-title">Bug Center</div><div class="card-desc">Pranks & effects</div></div>
+            <div class="card" onclick="showPage('news')"><div class="card-icon">📢</div><div class="card-title">News</div><div class="card-desc">Latest updates</div></div>
+            <div class="card" onclick="showPage('builder')"><div class="card-icon">📦</div><div class="card-title">Builder</div><div class="card-desc">Build apps</div></div>
+        </div>
+
+        <div class="section-title">📊 Live Statistics</div>
+        <div class="stats-grid">
+            <div class="stat-card"><div class="stat-label">Online Users</div><div class="stat-value" id="onlineUsers">1,037</div><div class="stat-change">▲ +12 dari kemarin</div></div>
+            <div class="stat-card"><div class="stat-label">Total Members</div><div class="stat-value" id="totalMembers">5,921</div><div class="stat-change">▲ +48 minggu ini</div></div>
+            <div class="stat-card"><div class="stat-label">Premium Users</div><div class="stat-value" id="premiumUsers">853</div><div class="stat-change">▲ +7 hari ini</div></div>
+            <div class="stat-card"><div class="stat-label">Active Servers</div><div class="stat-value" id="activeServers">32</div><div class="stat-change down">▼ 1 maintenance</div></div>
+        </div>
+
+        <div class="section-title">🔥 Featured Tools</div>
+        <div class="feature-list">
+            <div class="feature-item" onclick="showPage('bugcenter')"><div class="feature-icon">🐞</div><div class="feature-title">Bug Center</div><div class="feature-desc">Simulasi visual dan efek prank interaktif yang bikin heboh</div></div>
+            <div class="feature-item" onclick="showPage('hosting')"><div class="feature-icon">☁</div><div class="feature-title">Hosting Center</div><div class="feature-desc">Kelola layanan hosting, domain, dan SSL Certificate</div></div>
+            <div class="feature-item" onclick="showPage('finance')"><div class="feature-icon">💰</div><div class="feature-title">Noxa Finance</div><div class="feature-desc">Kelola keuangan digital, tabungan, dan laporan transaksi</div></div>
+            <div class="feature-item" onclick="showPage('vps')"><div class="feature-icon">🖥</div><div class="feature-title">VPS Manager</div><div class="feature-desc">Kontrol penuh server VPS: start, stop, restart, console</div></div>
+            <div class="feature-item" onclick="showPage('builder')"><div class="feature-icon">📦</div><div class="feature-title">Flutter Builder</div><div class="feature-desc">Build APK/AAB dari project Flutter secara cloud</div></div>
+            <div class="feature-item" onclick="showPage('team')"><div class="feature-icon">👥</div><div class="feature-title">Team NOXA</div><div class="feature-desc">Kenali tim hebat di balik platform NOXA HUB</div></div>
+        </div>
+
+        <div class="section-title">🕌 Jadwal Sholat</div>
+        <div class="sholat-card"><div><div class="sholat-name">🌅 Subuh</div><div class="sholat-countdown">Sudah lewat</div></div><div class="sholat-time">04:30</div></div>
+        <div class="sholat-card active-prayer"><div><div class="sholat-name">☀ Dzuhur</div><div class="sholat-countdown">⏳ Berikutnya dalam ~2j</div></div><div class="sholat-time">12:00</div></div>
+        <div class="sholat-card"><div><div class="sholat-name">🌤 Ashar</div><div class="sholat-countdown">Menunggu</div></div><div class="sholat-time">15:15</div></div>
+        <div class="sholat-card"><div><div class="sholat-name">🌇 Maghrib</div><div class="sholat-countdown">Menunggu</div></div><div class="sholat-time">17:45</div></div>
+        <div class="sholat-card"><div><div class="sholat-name">🌙 Isya</div><div class="sholat-countdown">Menunggu</div></div><div class="sholat-time">19:00</div></div>
+    </div>
+
+    <!-- ════════════════ DASHBOARD PAGE ════════════════ -->
+    <div id="dashboardPage" class="page">
+        <div class="section-title">📊 Dashboard Overview</div>
+        <div class="stats-grid">
+            <div class="stat-card"><div class="stat-label">CPU Usage</div><div class="stat-value">34%</div><div class="stat-change">Normal</div></div>
+            <div class="stat-card"><div class="stat-label">RAM Usage</div><div class="stat-value">52%</div><div class="stat-change">Normal</div></div>
+            <div class="stat-card"><div class="stat-label">Storage</div><div class="stat-value">78%</div><div class="stat-change down">▲ Perhatian</div></div>
+            <div class="stat-card"><div class="stat-label">Network</div><div class="stat-value">125 Mb/s</div><div class="stat-change">Stabil</div></div>
+        </div>
+
+        <div class="dash-chart">
+            <div class="dash-chart-title">📈 Traffic Pengguna (7 Hari Terakhir)</div>
+            <div class="bar-chart" id="trafficChart"></div>
+            <div class="chart-x" id="chartX"></div>
+        </div>
+
+        <div class="section-title">⚡ Resource Usage</div>
+        <div class="dash-chart">
+            <div class="progress-wrap"><div class="progress-label"><span>CPU — Server-01</span><span>34%</span></div><div class="progress-bar"><div class="progress-fill fill-accent" style="width:34%"></div></div></div>
+            <div class="progress-wrap"><div class="progress-label"><span>RAM — Server-01</span><span>52%</span></div><div class="progress-bar"><div class="progress-fill fill-success" style="width:52%"></div></div></div>
+            <div class="progress-wrap"><div class="progress-label"><span>Storage — SSD1</span><span>78%</span></div><div class="progress-bar"><div class="progress-fill fill-warning" style="width:78%"></div></div></div>
+            <div class="progress-wrap"><div class="progress-label"><span>Bandwidth — Monthly</span><span>62%</span></div><div class="progress-bar"><div class="progress-fill fill-accent" style="width:62%"></div></div></div>
+        </div>
+
+        <div class="section-title">🔒 Security Log</div>
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>Time</th><th>Event</th><th>IP</th><th>Status</th></tr></thead>
+                <tbody>
+                    <tr><td>09:14:32</td><td>Login Success</td><td>103.55.12.8</td><td><span class="tag tag-success">✓ OK</span></td></tr>
+                    <tr><td>08:47:11</td><td>Failed Login</td><td>192.168.1.5</td><td><span class="tag tag-danger">✗ BLOCK</span></td></tr>
+                    <tr><td>07:22:55</td><td>Backup Completed</td><td>System</td><td><span class="tag tag-success">✓ OK</span></td></tr>
+                    <tr><td>06:00:01</td><td>SSL Renewed</td><td>System</td><td><span class="tag tag-success">✓ OK</span></td></tr>
+                    <tr><td>00:30:45</td><td>Port Scan Detected</td><td>45.33.22.1</td><td><span class="tag tag-warning">⚠ WARN</span></td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section-title">🌐 Active Sessions</div>
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>User</th><th>IP</th><th>Device</th><th>Duration</th><th>Action</th></tr></thead>
+                <tbody>
+                    <tr><td>NOXA (You)</td><td>103.55.12.8</td><td>📱 Android</td><td>2h 15m</td><td><span class="tag tag-accent">Active</span></td></tr>
+                    <tr><td>admin_01</td><td>192.168.0.2</td><td>💻 Windows</td><td>45m</td><td><span class="tag tag-accent">Active</span></td></tr>
+                    <tr><td>dev_rian</td><td>180.244.1.9</td><td>🍎 MacOS</td><td>12m</td><td><button class="btn btn-danger" style="padding:3px 10px;font-size:11px" onclick="alert('Session terminated')">Kick</button></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ════════════════ TOOLS PAGE ════════════════ -->
+    <div id="toolsPage" class="page">
+        <div class="section-title">🛠 Tools Center</div>
+        <div class="feature-list">
+            <div class="feature-item" onclick="openModal('ipCheckModal')"><div class="feature-icon">🌐</div><div class="feature-title">IP Checker</div><div class="feature-desc">Cek informasi lengkap sebuah IP Address secara real-time</div></div>
+            <div class="feature-item" onclick="openModal('pingModal')"><div class="feature-icon">📡</div><div class="feature-title">Ping Tool</div><div class="feature-desc">Test koneksi ke server/domain dengan ping simulation</div></div>
+            <div class="feature-item" onclick="openModal('passGenModal')"><div class="feature-icon">🔑</div><div class="feature-title">Password Generator</div><div class="feature-desc">Generate password kuat dan aman secara instan</div></div>
+            <div class="feature-item" onclick="openModal('base64Modal')"><div class="feature-icon">🔐</div><div class="feature-title">Base64 Encoder</div><div class="feature-desc">Encode dan decode teks ke format Base64</div></div>
+            <div class="feature-item" onclick="openModal('qrModal')"><div class="feature-icon">📷</div><div class="feature-title">QR Generator</div><div class="feature-desc">Generate QR code dari URL atau teks apapun</div></div>
+            <div class="feature-item" onclick="openModal('hashModal')"><div class="feature-icon">🔒</div><div class="feature-title">Hash Generator</div><div class="feature-desc">Generate MD5, SHA1, SHA256 dari teks</div></div>
+            <div class="feature-item" onclick="openModal('calcModal')"><div class="feature-icon">🧮</div><div class="feature-title">Kalkulator</div><div class="feature-desc">Kalkulator serbaguna untuk kebutuhan developer</div></div>
+            <div class="feature-item" onclick="openModal('converterModal')"><div class="feature-icon">🔄</div><div class="feature-title">Unit Converter</div><div class="feature-desc">Konversi satuan: byte, px, rem, ms, dll.</div></div>
+            <div class="feature-item" onclick="openModal('jsonModal')"><div class="feature-icon">📋</div><div class="feature-title">JSON Formatter</div><div class="feature-desc">Format dan validasi JSON dengan tampilan yang rapi</div></div>
+        </div>
+    </div>
+
+    <!-- ════════════════ HOSTING PAGE ════════════════ -->
+    <div id="hostingPage" class="page">
+        <div class="section-title">☁ Hosting Center</div>
+        <div class="stats-grid">
+            <div class="stat-card"><div class="stat-label">Active Domains</div><div class="stat-value">8</div><div class="stat-change">▲ Semua aktif</div></div>
+            <div class="stat-card"><div class="stat-label">Websites</div><div class="stat-value">12</div><div class="stat-change">10 online</div></div>
+            <div class="stat-card"><div class="stat-label">SSL Certs</div><div class="stat-value">8</div><div class="stat-change">▲ Valid semua</div></div>
+            <div class="stat-card"><div class="stat-label">Storage</div><div class="stat-value">14.2 GB</div><div class="stat-change down">dari 20 GB</div></div>
+        </div>
+
+        <div class="section-title">🌐 Domain List</div>
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>Domain</th><th>Status</th><th>SSL</th><th>Expires</th><th>Action</th></tr></thead>
+                <tbody>
+                    <tr><td>noxa.id</td><td><span class="tag tag-success">● Online</span></td><td><span class="tag tag-accent">✓ Active</span></td><td>31 Des 2026</td><td><button class="btn btn-primary" style="padding:4px 12px;font-size:11px" onclick="openModal('domainModal')">Manage</button></td></tr>
+                    <tr><td>noxa.cloud</td><td><span class="tag tag-success">● Online</span></td><td><span class="tag tag-accent">✓ Active</span></td><td>15 Nov 2026</td><td><button class="btn btn-primary" style="padding:4px 12px;font-size:11px" onclick="openModal('domainModal')">Manage</button></td></tr>
+                    <tr><td>api.noxa.id</td><td><span class="tag tag-success">● Online</span></td><td><span class="tag tag-accent">✓ Active</span></td><td>31 Des 2026</td><td><button class="btn btn-primary" style="padding:4px 12px;font-size:11px" onclick="openModal('domainModal')">Manage</button></td></tr>
+                    <tr><td>dev.noxa.id</td><td><span class="tag tag-warning">⚠ Staging</span></td><td><span class="tag tag-warning">⚠ Exp Soon</span></td><td>12 Jun 2026</td><td><button class="btn btn-warning" style="padding:4px 12px;font-size:11px;color:#000" onclick="alert('Renewing SSL...')">Renew SSL</button></td></tr>
+                    <tr><td>old.noxa.id</td><td><span class="tag tag-danger">● Offline</span></td><td><span class="tag tag-danger">✗ Expired</span></td><td>01 Jan 2026</td><td><button class="btn btn-danger" style="padding:4px 12px;font-size:11px" onclick="alert('Activating domain...')">Activate</button></td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section-title">🗄 Database Manager</div>
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>Database</th><th>Type</th><th>Size</th><th>Status</th><th>Action</th></tr></thead>
+                <tbody>
+                    <tr><td>noxa_main</td><td>MySQL 8.0</td><td>1.2 GB</td><td><span class="tag tag-success">● Running</span></td><td><button class="btn btn-primary" style="padding:4px 12px;font-size:11px" onclick="openModal('dbModal')">Open</button></td></tr>
+                    <tr><td>noxa_users</td><td>MySQL 8.0</td><td>450 MB</td><td><span class="tag tag-success">● Running</span></td><td><button class="btn btn-primary" style="padding:4px 12px;font-size:11px" onclick="openModal('dbModal')">Open</button></td></tr>
+                    <tr><td>noxa_logs</td><td>PostgreSQL</td><td>3.8 GB</td><td><span class="tag tag-success">● Running</span></td><td><button class="btn btn-primary" style="padding:4px 12px;font-size:11px" onclick="openModal('dbModal')">Open</button></td></tr>
+                    <tr><td>noxa_cache</td><td>Redis</td><td>128 MB</td><td><span class="tag tag-accent">● Caching</span></td><td><button class="btn btn-warning" style="padding:4px 12px;font-size:11px;color:#000" onclick="alert('Cache flushed!')">Flush</button></td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section-title">🔒 SSL Certificate Manager</div>
+        <div class="feature-list">
+            <div class="feature-item" onclick="alert('SSL Manager: noxa.id\nValid until: Dec 31, 2026\nIssuer: Let\'s Encrypt\nStatus: Active ✓')"><div class="feature-icon">🔒</div><div class="feature-title">noxa.id</div><div class="feature-desc">Let's Encrypt — Valid until 31 Des 2026 <span class="tag tag-success">Active</span></div></div>
+            <div class="feature-item" onclick="alert('SSL noxa.cloud\nRenew soon!')"><div class="feature-icon">🔒</div><div class="feature-title">noxa.cloud</div><div class="feature-desc">ZeroSSL — Valid until 15 Nov 2026 <span class="tag tag-accent">Active</span></div></div>
+            <div class="feature-item" onclick="openModal('sslModal')"><div class="feature-icon">➕</div><div class="feature-title">Add New SSL</div><div class="feature-desc">Issue sertifikat SSL baru untuk domain Anda</div></div>
+        </div>
+    </div>
+
+    <!-- ════════════════ FINANCE PAGE ════════════════ -->
+    <div id="financePage" class="page">
+        <div class="section-title">💰 Noxa Finance</div>
+        <div class="balance-card">
+            <div class="balance-label">Saldo Utama</div>
+            <div class="balance-amount" id="balanceDisplay">Rp 12.450.000</div>
+            <div class="balance-sub">▲ +Rp 350.000 bulan ini</div>
+            <div style="margin-top:15px;display:flex;gap:10px;flex-wrap:wrap">
+                <button class="btn btn-success" onclick="openModal('topupModal')">➕ Top Up</button>
+                <button class="btn btn-danger" onclick="openModal('withdrawModal')">➖ Tarik Dana</button>
+                <button class="btn btn-primary" onclick="openModal('transferModal')">↔ Transfer</button>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card"><div class="stat-label">Pemasukan</div><div class="stat-value" style="color:var(--success)">Rp 8.2 jt</div><div class="stat-change">Bulan ini</div></div>
+            <div class="stat-card"><div class="stat-label">Pengeluaran</div><div class="stat-value" style="color:var(--danger)">Rp 5.1 jt</div><div class="stat-change down">Bulan ini</div></div>
+            <div class="stat-card"><div class="stat-label">Target Tabungan</div><div class="stat-value">62%</div><div class="stat-change">dari Rp 20jt</div></div>
+            <div class="stat-card"><div class="stat-label">Investasi</div><div class="stat-value" style="color:var(--warning)">Rp 3.5 jt</div><div class="stat-change">▲ +12% ROI</div></div>
+        </div>
+
+        <div style="margin-bottom:15px">
+            <div class="progress-wrap"><div class="progress-label"><span>Target Tabungan — Rp 20.000.000</span><span>62%</span></div><div class="progress-bar"><div class="progress-fill fill-success" style="width:62%"></div></div></div>
+        </div>
+
+        <div class="section-title">📋 Riwayat Transaksi</div>
+        <div class="tx-list">
+            <div class="tx-item"><div class="tx-left"><div class="tx-icon" style="background:rgba(0,255,136,0.12)">💸</div><div class="tx-info"><div class="tx-name">Penjualan Script Bot</div><div class="tx-date">31 Mei 2026, 09:14</div></div></div><div class="tx-amount plus">+Rp 500.000</div></div>
+            <div class="tx-item"><div class="tx-left"><div class="tx-icon" style="background:rgba(255,51,102,0.12)">🛒</div><div class="tx-info"><div class="tx-name">Perpanjang Hosting</div><div class="tx-date">30 Mei 2026, 14:22</div></div></div><div class="tx-amount minus">-Rp 350.000</div></div>
+            <div class="tx-item"><div class="tx-left"><div class="tx-icon" style="background:rgba(0,255,136,0.12)">💰</div><div class="tx-info"><div class="tx-name">Deposit dari Klien</div><div class="tx-date">29 Mei 2026, 11:05</div></div></div><div class="tx-amount plus">+Rp 2.000.000</div></div>
+            <div class="tx-item"><div class="tx-left"><div class="tx-icon" style="background:rgba(255,170,0,0.12)">⚡</div><div class="tx-info"><div class="tx-name">Top Up DANA</div><div class="tx-date">28 Mei 2026, 19:33</div></div></div><div class="tx-amount plus">+Rp 1.000.000</div></div>
+            <div class="tx-item"><div class="tx-left"><div class="tx-icon" style="background:rgba(255,51,102,0.12)">🖥</div><div class="tx-info"><div class="tx-name">VPS Server Fee</div><div class="tx-date">27 Mei 2026, 08:00</div></div></div><div class="tx-amount minus">-Rp 250.000</div></div>
+            <div class="tx-item"><div class="tx-left"><div class="tx-icon" style="background:rgba(0,255,136,0.12)">🎯</div><div class="tx-info"><div class="tx-name">Jasa Development</div><div class="tx-date">25 Mei 2026, 16:00</div></div></div><div class="tx-amount plus">+Rp 4.700.000</div></div>
+        </div>
+    </div>
+
+    <!-- ════════════════ BUG CENTER PAGE ════════════════ -->
+    <div id="bugcenterPage" class="page">
+        <div class="section-title">🐞 Bug Center</div>
+        <div style="background:rgba(255,51,102,0.08);border:1px solid rgba(255,51,102,0.2);border-radius:10px;padding:14px;margin-bottom:20px;font-size:12px;color:var(--text-dim)">
+            ⚠ <strong style="color:var(--warning)">Disclaimer:</strong> Bug Center ini adalah simulasi visual / efek prank untuk entertainment. Tidak ada data yang diambil atau kerusakan yang terjadi pada perangkat.
+        </div>
+
+        <div class="bug-grid">
+            <div class="bug-card" onclick="runBug('crash')"><div class="bug-icon">💥</div><div class="bug-name">Fake Crash</div><div class="bug-desc">Simulasi crash layar</div></div>
+            <div class="bug-card" onclick="runBug('bsod')"><div class="bug-icon">🔵</div><div class="bug-name">Blue Screen</div><div class="bug-desc">BSOD simulasi Windows</div></div>
+            <div class="bug-card" onclick="runBug('matrix')"><div class="bug-icon">🟩</div><div class="bug-name">Matrix Rain</div><div class="bug-desc">Efek Matrix digital rain</div></div>
+            <div class="bug-card" onclick="runBug('glitch')"><div class="bug-icon">📺</div><div class="bug-name">Screen Glitch</div><div class="bug-desc">Visual glitch error</div></div>
+            <div class="bug-card" onclick="runBug('hack')"><div class="bug-icon">💻</div><div class="bug-name">Fake Hack</div><div class="bug-desc">Terminal hacking simulasi</div></div>
+            <div class="bug-card" onclick="runBug('virus')"><div class="bug-icon">🦠</div><div class="bug-name">Virus Alert</div><div class="bug-desc">Popup virus palsu</div></div>
+            <div class="bug-card" onclick="runBug('battery')"><div class="bug-icon">🔋</div><div class="bug-name">Battery 0%</div><div class="bug-desc">Simulasi baterai habis</div></div>
+            <div class="bug-card" onclick="runBug('earthquake')"><div class="bug-icon">📳</div><div class="bug-name">Earthquake</div><div class="bug-desc">Efek gempa layar</div></div>
+            <div class="bug-card" onclick="runBug('nuke')"><div class="bug-icon">💣</div><div class="bug-name">Nuke Launch</div><div class="bug-desc">Simulasi nuke launch alert</div></div>
+            <div class="bug-card" onclick="runBug('stop')"><div class="bug-icon">🛑</div><div class="bug-name">Stop All</div><div class="bug-desc">Hentikan semua efek</div></div>
+        </div>
+
+        <div class="section-title">📟 Output Log</div>
+        <div class="terminal" id="bugTerminal">// Output akan muncul di sini setelah memilih efek...<br>// Pilih salah satu Bug Effect di atas untuk memulai.</div>
+    </div>
+
+    <!-- ════════════════ VPS PAGE ════════════════ -->
+    <div id="vpsPage" class="page">
+        <div class="section-title">🖥 VPS Manager</div>
+        <div class="stats-grid">
+            <div class="stat-card"><div class="stat-label">Total VPS</div><div class="stat-value">6</div><div class="stat-change">Terdaftar</div></div>
+            <div class="stat-card"><div class="stat-label">Online</div><div class="stat-value" style="color:var(--success)">4</div><div class="stat-change">Running</div></div>
+            <div class="stat-card"><div class="stat-label">Stopped</div><div class="stat-value" style="color:var(--danger)">1</div><div class="stat-change down">Offline</div></div>
+            <div class="stat-card"><div class="stat-label">Restarting</div><div class="stat-value" style="color:var(--warning)">1</div><div class="stat-change">In progress</div></div>
+        </div>
+
+        <div class="vps-card">
+            <div class="vps-header">
+                <div class="vps-name">🖥 VPS-01 — Main Production</div>
+                <div class="vps-status"><span class="status-dot dot-green"></span><span style="color:var(--success)">Online</span></div>
+            </div>
+            <div class="vps-meta">
+                <div class="vps-meta-item">📍 Region: Singapore</div>
+                <div class="vps-meta-item">🔧 OS: Ubuntu 22.04 LTS</div>
+                <div class="vps-meta-item">💻 CPU: 4 Core — 34%</div>
+                <div class="vps-meta-item">🧠 RAM: 8 GB — 45%</div>
+                <div class="vps-meta-item">💾 Storage: 100 GB SSD — 38%</div>
+                <div class="vps-meta-item">🌐 IP: 103.55.12.8</div>
+            </div>
+            <div style="margin-top:12px"><div class="progress-bar"><div class="progress-fill fill-accent" style="width:34%"></div></div></div>
+            <div class="vps-actions">
+                <button class="vps-btn vps-btn-restart" onclick="vpsAction('VPS-01','restart')">🔄 Restart</button>
+                <button class="vps-btn vps-btn-stop" onclick="vpsAction('VPS-01','stop')">⏹ Stop</button>
+                <button class="vps-btn vps-btn-console" onclick="openModal('vpsConsoleModal')">💻 Console</button>
+            </div>
+        </div>
+
+        <div class="vps-card">
+            <div class="vps-header">
+                <div class="vps-name">🖥 VPS-02 — Backup Server</div>
+                <div class="vps-status"><span class="status-dot dot-green"></span><span style="color:var(--success)">Online</span></div>
+            </div>
+            <div class="vps-meta">
+                <div class="vps-meta-item">📍 Region: Tokyo</div>
+                <div class="vps-meta-item">🔧 OS: Debian 12</div>
+                <div class="vps-meta-item">💻 CPU: 2 Core — 18%</div>
+                <div class="vps-meta-item">🧠 RAM: 4 GB — 28%</div>
+                <div class="vps-meta-item">💾 Storage: 50 GB SSD — 55%</div>
+                <div class="vps-meta-item">🌐 IP: 45.77.223.14</div>
+            </div>
+            <div style="margin-top:12px"><div class="progress-bar"><div class="progress-fill fill-success" style="width:18%"></div></div></div>
+            <div class="vps-actions">
+                <button class="vps-btn vps-btn-restart" onclick="vpsAction('VPS-02','restart')">🔄 Restart</button>
+                <button class="vps-btn vps-btn-stop" onclick="vpsAction('VPS-02','stop')">⏹ Stop</button>
+                <button class="vps-btn vps-btn-console" onclick="openModal('vpsConsoleModal')">💻 Console</button>
+            </div>
+        </div>
+
+        <div class="vps-card">
+            <div class="vps-header">
+                <div class="vps-name">🖥 VPS-03 — Dev Environment</div>
+                <div class="vps-status"><span class="status-dot dot-yellow"></span><span style="color:var(--warning)">Restarting...</span></div>
+            </div>
+            <div class="vps-meta">
+                <div class="vps-meta-item">📍 Region: Frankfurt</div>
+                <div class="vps-meta-item">🔧 OS: CentOS 9</div>
+                <div class="vps-meta-item">💻 CPU: 8 Core — —</div>
+                <div class="vps-meta-item">🧠 RAM: 16 GB — —</div>
+                <div class="vps-meta-item">💾 Storage: 200 GB SSD — 71%</div>
+                <div class="vps-meta-item">🌐 IP: 89.149.204.12</div>
+            </div>
+            <div style="margin-top:12px"><div class="progress-bar"><div class="progress-fill fill-warning" style="width:70%;animation: pulse 1s infinite"></div></div></div>
+            <div class="vps-actions">
+                <button class="vps-btn vps-btn-start" onclick="vpsAction('VPS-03','start')">▶ Force Start</button>
+                <button class="vps-btn vps-btn-console" onclick="openModal('vpsConsoleModal')">💻 Console</button>
+            </div>
+        </div>
+
+        <div class="vps-card">
+            <div class="vps-header">
+                <div class="vps-name">🖥 VPS-04 — Staging</div>
+                <div class="vps-status"><span class="status-dot dot-red"></span><span style="color:var(--danger)">Stopped</span></div>
+            </div>
+            <div class="vps-meta">
+                <div class="vps-meta-item">📍 Region: Jakarta</div>
+                <div class="vps-meta-item">🔧 OS: Ubuntu 20.04</div>
+                <div class="vps-meta-item">💻 CPU: 2 Core — 0%</div>
+                <div class="vps-meta-item">🧠 RAM: 2 GB — 0%</div>
+                <div class="vps-meta-item">💾 Storage: 30 GB HDD — 40%</div>
+                <div class="vps-meta-item">🌐 IP: 103.189.123.5</div>
+            </div>
+            <div style="margin-top:12px"><div class="progress-bar"><div class="progress-fill fill-danger" style="width:0%"></div></div></div>
+            <div class="vps-actions">
+                <button class="vps-btn vps-btn-start" onclick="vpsAction('VPS-04','start')">▶ Start</button>
+                <button class="vps-btn vps-btn-console" onclick="alert('VPS tidak dapat dibuka: Stopped')">💻 Console</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ════════════════ FLUTTER BUILDER PAGE ════════════════ -->
+    <div id="builderPage" class="page">
+        <div class="section-title">📦 Flutter Builder</div>
+        <div style="background:rgba(0,212,255,0.07);border:1px solid rgba(0,212,255,0.2);border-radius:12px;padding:18px;margin-bottom:20px">
+            <div style="font-size:14px;font-weight:700;margin-bottom:8px;color:var(--accent)">⚡ Cloud Build Service</div>
+            <div style="font-size:12px;color:var(--text-dim)">Build APK, AAB, dan IPA dari project Flutter kamu secara cloud tanpa perlu setup environment lokal.</div>
+        </div>
+
+        <div class="section-title">📋 Build Steps</div>
+        <div class="build-step">
+            <div class="step-num">1</div>
+            <div class="step-content"><div class="step-title">Upload Project</div><div class="step-desc">Upload file .zip dari project Flutter Anda. Pastikan sudah ada pubspec.yaml di root folder.</div></div>
+        </div>
+        <div class="build-step">
+            <div class="step-num">2</div>
+            <div class="step-content"><div class="step-title">Konfigurasi Build</div><div class="step-desc">Pilih target platform (Android/iOS), mode build (Debug/Release), dan atur signing key jika diperlukan.</div></div>
+        </div>
+        <div class="build-step">
+            <div class="step-num">3</div>
+            <div class="step-content"><div class="step-title">Jalankan Build</div><div class="step-desc">Klik "Start Build" dan sistem akan otomatis menjalankan flutter build. Estimasi waktu 3-8 menit.</div></div>
+        </div>
+        <div class="build-step">
+            <div class="step-num">4</div>
+            <div class="step-content"><div class="step-title">Download Hasil</div><div class="step-desc">Setelah build selesai, file APK/AAB/IPA bisa langsung didownload dari panel history.</div></div>
+        </div>
+
+        <div class="section-title">🚀 New Build</div>
+        <div style="background:rgba(26,31,58,0.7);border:1px solid rgba(0,212,255,0.15);border-radius:12px;padding:20px">
+            <div class="input-group"><div class="input-label">Project Name</div><input class="input-field" type="text" placeholder="Nama project Anda..." id="buildProjectName"></div>
+            <div class="input-group"><div class="input-label">Target Platform</div><select class="input-field" id="buildPlatform"><option>Android APK</option><option>Android AAB</option><option>iOS IPA</option></select></div>
+            <div class="input-group"><div class="input-label">Build Mode</div><select class="input-field" id="buildMode"><option>Release</option><option>Debug</option><option>Profile</option></select></div>
+            <div class="input-group"><div class="input-label">Flutter Version</div><select class="input-field"><option>3.22.x (Latest)</option><option>3.19.x</option><option>3.16.x</option></select></div>
+            <button class="btn btn-primary" onclick="startBuild()">🚀 Start Build</button>
+        </div>
+
+        <div class="section-title">📜 Build History</div>
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>Project</th><th>Platform</th><th>Mode</th><th>Status</th><th>Time</th><th>Download</th></tr></thead>
+                <tbody>
+                    <tr><td>noxa_app</td><td>APK</td><td>Release</td><td><span class="tag tag-success">✓ Done</span></td><td>4m 12s</td><td><button class="btn btn-success" style="padding:3px 10px;font-size:11px" onclick="alert('Downloading noxa_app.apk...')">⬇ APK</button></td></tr>
+                    <tr><td>noxa_store</td><td>AAB</td><td>Release</td><td><span class="tag tag-success">✓ Done</span></td><td>6m 03s</td><td><button class="btn btn-success" style="padding:3px 10px;font-size:11px" onclick="alert('Downloading noxa_store.aab...')">⬇ AAB</button></td></tr>
+                    <tr><td>noxa_beta</td><td>APK</td><td>Debug</td><td><span class="tag tag-danger">✗ Failed</span></td><td>1m 44s</td><td><button class="btn btn-danger" style="padding:3px 10px;font-size:11px" onclick="openModal('buildLogModa')                     <tr><td>dev_rian</td><td>180.244.1.9</td><td>🍎 MacOS</td><td>12m</td><td><button class="btn btn-danger" style="padding:3px 10px;font-size:11px" onclick="alert('Session terminated')">Kick</button></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ════════════════ TOOLS PAGE ════════════════ -->
+    <div id="toolsPage" class="page">
+        <div class="section-title">🛠 Tools Center</div>
+        <div class="feature-list">
+            <div class="feature-item" onclick="openModal('ipCheckModal')"><div class="feature-icon">🌐</div><div class="feature-title">IP Checker</div><div class="feature-desc">Cek informasi lengkap sebuah IP Address secara real-time</div></div>
+            <div class="feature-item" onclick="openModal('pingModal')"><div class="feature-icon">📡</div><div class="feature-title">Ping Tool</div><div class="feature-desc">Test koneksi ke server/domain dengan ping simulation</div></div>
+            <div class="feature-item" onclick="openModal('passGenModal')"><div class="feature-icon">🔑</div><div class="feature-title">Password Generator</div><div class="feature-desc">Generate password kuat dan aman secara instan</div></div>
+            <div class="feature-item" onclick="openModal('base64Modal')"><div class="feature-icon">🔐</div><div class="feature-title">Base64 Encoder</div><div class="feature-desc">Encode dan decode teks ke format Base64</div></div>
+            <div class="feature-item" onclick="openModal('qrModal')"><div class="feature-icon">📷</div><div class="feature-title">QR Generator</div><div class="feature-desc">Generate QR code dari URL atau teks apapun</div></div>
+            <div class="feature-item" onclick="openModal('hashModal')"><div class="feature-icon">🔒</div><div class="feature-title">Hash Generator</div><div class="feature-desc">Generate MD5, SHA1, SHA256 dari teks</div></div>
+            <div class="feature-item" onclick="openModal('calcModal')"><div class="feature-icon">🧮</div><div class="feature-title">Kalkulator</div><div class="feature-desc">Kalkulator serbaguna untuk kebutuhan developer</div></div>
+            <div class="feature-item" onclick="openModal('converterModal')"><div class="feature-icon">🔄</div><div class="feature-title">Unit Converter</div><div class="feature-desc">Konversi satuan: byte, px, rem, ms, dll.</div></div>
+            <div class="feature-item" onclick="openModal('jsonModal')"><div class="feature-icon">📋</div><div class="feature-title">JSON Formatter</div><div class="feature-desc">Format dan validasi JSON dengan tampilan yang rapi</div></div>
+        </div>
+    </div>
+
+    <!-- ════════════════ HOSTING PAGE ════════════════ -->
+    <div id="hostingPage" class="page">
+        <div class="section-title">☁ Hosting Center</div>
+        <div class="stats-grid">
+            <div class="stat-card"><div class="stat-label">Active Domains</div><div class="stat-value">8</div><div class="stat-change">▲ Semua aktif</div></div>
+            <div class="stat-card"><div class="stat-label">Websites</div><div class="stat-value">12</div><div class="stat-change">10 online</div></div>
+            <div class="stat-card"><div class="stat-label">SSL Certs</div><div class="stat-value">8</div><div class="stat-change">▲ Valid semua</div></div>
+            <div class="stat-card"><div class="stat-label">Storage</div><div class="stat-value">14.2 GB</div><div class="stat-change down">dari 20 GB</div></div>
+        </div>
+
+        <div class="section-title">🌐 Domain List</div>
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>Domain</th><th>Status</th><th>SSL</th><th>Expires</th><th>Action</th></tr></thead>
+                <tbody>
+                    <tr><td>noxa.id</td><td><span class="tag tag-success">● Online</span></td><td><span class="tag tag-accent">✓ Active</span></td><td>31 Des 2026</td><td><button class="btn btn-primary" style="padding:4px 12px;font-size:11px" onclick="openModal('domainModal')">Manage</button></td></tr>
+                    <tr><td>noxa.cloud</td><td><span class="tag tag-success">● Online</span></td><td><span class="tag tag-accent">✓ Active</span></td><td>15 Nov 2026</td><td><button class="btn btn-primary" style="padding:4px 12px;font-size:11px" onclick="openModal('domainModal')">Manage</button></td></tr>
+                    <tr><td>api.noxa.id</td><td><span class="tag tag-success">● Online</span></td><td><span class="tag tag-accent">✓ Active</span></td><td>31 Des 2026</td><td><button class="btn btn-primary" style="padding:4px 12px;font-size:11px" onclick="openModal('domainModal')">Manage</button></td></tr>
+                    <tr><td>dev.noxa.id</td><td><span class="tag tag-warning">⚠ Staging</span></td><td><span class="tag tag-warning">⚠ Exp Soon</span></td><td>12 Jun 2026</td><td><button class="btn btn-warning" style="padding:4px 12px;font-size:11px;color:#000" onclick="alert('Renewing SSL...')">Renew SSL</button></td></tr>
+                    <tr><td>old.noxa.id</td><td><span class="tag tag-danger">● Offline</span></td><td><span class="tag tag-danger">✗ Expired</span></td><td>01 Jan 2026</td><td><button class="btn btn-danger" style="padding:4px 12px;font-size:11px" onclick="alert('Activating domain...')">Activate</button></td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section-title">🗄 Database Manager</div>
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>Database</th><th>Type</th><th>Size</th><th>Status</th><th>Action</th></tr></thead>
+                <tbody>
+                    <tr><td>noxa_main</td><td>MySQL 8.0</td><td>1.2 GB</td><td><span class="tag tag-success">● Running</span></td><td><button class="btn btn-primary" style="padding:4px 12px;font-size:11px" onclick="openModal('dbModal')">Open</button></td></tr>
+                    <tr><td>noxa_users</td><td>MySQL 8.0</td><td>450 MB</td><td><span class="tag tag-success">● Running</span></td><td><button class="btn btn-primary" style="padding:4px 12px;font-size:11px" onclick="openModal('dbModal')">Open</button></td></tr>
+                    <tr><td>noxa_logs</td><td>PostgreSQL</td><td>3.8 GB</td><td><span class="tag tag-success">● Running</span></td><td><button class="btn btn-primary" style="padding:4px 12px;font-size:11px" onclick="openModal('dbModal')">Open</button></td></tr>
+                    <tr><td>noxa_cache</td><td>Redis</td><td>128 MB</td><td><span class="tag tag-accent">● Caching</span></td><td><button class="btn btn-warning" style="padding:4px 12px;font-size:11px;color:#000" onclick="alert('Cache flushed!')">Flush</button></td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section-title">🔒 SSL Certificate Manager</div>
+        <div class="feature-list">
+            <div class="feature-item" onclick="alert('SSL Manager: noxa.id\nValid until: Dec 31, 2026\nIssuer: Let\'s Encrypt\nStatus: Active ✓')"><div class="feature-icon">🔒</div><div class="feature-title">noxa.id</div><div class="feature-desc">Let's Encrypt — Valid until 31 Des 2026 <span class="tag tag-success">Active</span></div></div>
+            <div class="feature-item" onclick="alert('SSL noxa.cloud\nRenew soon!')"><div class="feature-icon">🔒</div><div class="feature-title">noxa.cloud</div><div class="feature-desc">ZeroSSL — Valid until 15 Nov 2026 <span class="tag tag-accent">Active</span></div></div>
+            <div class="feature-item" onclick="openModal('sslModal')"><div class="feature-icon">➕</div><div class="feature-title">Add New SSL</div><div class="feature-desc">Issue sertifikat SSL baru untuk domain Anda</div></div>
+        </div>
+    </div>
+
+    <!-- ════════════════ FINANCE PAGE ════════════════ -->
+    <div id="financePage" class="page">
+        <div class="section-title">💰 Noxa Finance</div>
+        <div class="balance-card">
+            <div class="balance-label">Saldo Utama</div>
+            <div class="balance-amount" id="balanceDisplay">Rp 12.450.000</div>
+            <div class="balance-sub">▲ +Rp 350.000 bulan ini</div>
+            <div style="margin-top:15px;display:flex;gap:10px;flex-wrap:wrap">
+                <button class="btn btn-success" onclick="openModal('topupModal')">➕ Top Up</button>
+                <button class="btn btn-danger" onclick="openModal('withdrawModal')">➖ Tarik Dana</button>
+                <button class="btn btn-primary" onclick="openModal('transferModal')">↔ Transfer</button>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card"><div class="stat-label">Pemasukan</div><div class="stat-value" style="color:var(--success)">Rp 8.2 jt</div><div class="stat-change">Bulan ini</div></div>
+            <div class="stat-card"><div class="stat-label">Pengeluaran</div><div class="stat-value" style="color:var(--danger)">Rp 5.1 jt</div><div class="stat-change down">Bulan ini</div></div>
+            <div class="stat-card"><div class="stat-label">Target Tabungan</div><div class="stat-value">62%</div><div class="stat-change">dari Rp 20jt</div></div>
+            <div class="stat-card"><div class="stat-label">Investasi</div><div class="stat-value" style="color:var(--warning)">Rp 3.5 jt</div><div class="stat-change">▲ +12% ROI</div></div>
+        </div>
+
+        <div style="margin-bottom:15px">
+            <div class="progress-wrap"><div class="progress-label"><span>Target Tabungan — Rp 20.000.000</span><span>62%</span></div><div class="progress-bar"><div class="progress-fill fill-success" style="width:62%"></div></div></div>
+        </div>
+
+        <div class="section-title">📋 Riwayat Transaksi</div>
+        <div class="tx-list">
+            <div class="tx-item"><div class="tx-left"><div class="tx-icon" style="background:rgba(0,255,136,0.12)">💸</div><div class="tx-info"><div class="tx-name">Penjualan Script Bot</div><div class="tx-date">31 Mei 2026, 09:14</div></div></div><div class="tx-amount plus">+Rp 500.000</div></div>
+            <div class="tx-item"><div class="tx-left"><div class="tx-icon" style="background:rgba(255,51,102,0.12)">🛒</div><div class="tx-info"><div class="tx-name">Perpanjang Hosting</div><div class="tx-date">30 Mei 2026, 14:22</div></div></div><div class="tx-amount minus">-Rp 350.000</div></div>
+            <div class="tx-item"><div class="tx-left"><div class="tx-icon" style="background:rgba(0,255,136,0.12)">💰</div><div class="tx-info"><div class="tx-name">Deposit dari Klien</div><div class="tx-date">29 Mei 2026, 11:05</div></div></div><div class="tx-amount plus">+Rp 2.000.000</div></div>
+            <div class="tx-item"><div class="tx-left"><div class="tx-icon" style="background:rgba(255,170,0,0.12)">⚡</div><div class="tx-info"><div class="tx-name">Top Up DANA</div><div class="tx-date">28 Mei 2026, 19:33</div></div></div><div class="tx-amount plus">+Rp 1.000.000</div></div>
+            <div class="tx-item"><div class="tx-left"><div class="tx-icon" style="background:rgba(255,51,102,0.12)">🖥</div><div class="tx-info"><div class="tx-name">VPS Server Fee</div><div class="tx-date">27 Mei 2026, 08:00</div></div></div><div class="tx-amount minus">-Rp 250.000</div></div>
+            <div class="tx-item"><div class="tx-left"><div class="tx-icon" style="background:rgba(0,255,136,0.12)">🎯</div><div class="tx-info"><div class="tx-name">Jasa Development</div><div class="tx-date">25 Mei 2026, 16:00</div></div></div><div class="tx-amount plus">+Rp 4.700.000</div></div>
+        </div>
+    </div>
+
+    <!-- ════════════════ BUG CENTER PAGE ════════════════ -->
+    <div id="bugcenterPage" class="page">
+        <div class="section-title">🐞 Bug Center</div>
+        <div style="background:rgba(255,51,102,0.08);border:1px solid rgba(255,51,102,0.2);border-radius:10px;padding:14px;margin-bottom:20px;font-size:12px;color:var(--text-dim)">
+            ⚠ <strong style="color:var(--warning)">Disclaimer:</strong> Bug Center ini adalah simulasi visual / efek prank untuk entertainment. Tidak ada data yang diambil atau kerusakan yang terjadi pada perangkat.
+        </div>
+
+        <div class="bug-grid">
+            <div class="bug-card" onclick="runBug('crash')"><div class="bug-icon">💥</div><div class="bug-name">Fake Crash</div><div class="bug-desc">Simulasi crash layar</div></div>
+            <div class="bug-card" onclick="runBug('bsod')"><div class="bug-icon">🔵</div><div class="bug-name">Blue Screen</div><div class="bug-desc">BSOD simulasi Windows</div></div>
+            <div class="bug-card" onclick="runBug('matrix')"><div class="bug-icon">🟩</div><div class="bug-name">Matrix Rain</div><div class="bug-desc">Efek Matrix digital rain</div></div>
+            <div class="bug-card" onclick="runBug('glitch')"><div class="bug-icon">📺</div><div class="bug-name">Screen Glitch</div><div class="bug-desc">Visual glitch error</div></div>
+            <div class="bug-card" onclick="runBug('hack')"><div class="bug-icon">💻</div><div class="bug-name">Fake Hack</div><div class="bug-desc">Terminal hacking simulasi</div></div>
+            <div class="bug-card" onclick="runBug('virus')"><div class="bug-icon">🦠</div><div class="bug-name">Virus Alert</div><div class="bug-desc">Popup virus palsu</div></div>
+            <div class="bug-card" onclick="runBug('battery')"><div class="bug-icon">🔋</div><div class="bug-name">Battery 0%</div><div class="bug-desc">Simulasi baterai habis</div></div>
+            <div class="bug-card" onclick="runBug('earthquake')"><div class="bug-icon">📳</div><div class="bug-name">Earthquake</div><div class="bug-desc">Efek gempa layar</div></div>
+            <div class="bug-card" onclick="runBug('nuke')"><div class="bug-icon">💣</div><div class="bug-name">Nuke Launch</div><div class="bug-desc">Simulasi nuke launch alert</div></div>
+            <div class="bug-card" onclick="runBug('stop')"><div class="bug-icon">🛑</div><div class="bug-name">Stop All</div><div class="bug-desc">Hentikan semua efek</div></div>
+        </div>
+
+        <div class="section-title">📟 Output Log</div>
+        <div class="terminal" id="bugTerminal">// Output akan muncul di sini setelah memilih efek...<br>// Pilih salah satu Bug Effect di atas untuk memulai.</div>
+    </div>
+
+    <!-- ════════════════ VPS PAGE ════════════════ -->
+    <div id="vpsPage" class="page">
+        <div class="section-title">🖥 VPS Manager</div>
+        <div class="stats-grid">
+            <div class="stat-card"><div class="stat-label">Total VPS</div><div class="stat-value">6</div><div class="stat-change">Terdaftar</div></div>
+            <div class="stat-card"><div class="stat-label">Online</div><div class="stat-value" style="color:var(--success)">4</div><div class="stat-change">Running</div></div>
+            <div class="stat-card"><div class="stat-label">Stopped</div><div class="stat-value" style="color:var(--danger)">1</div><div class="stat-change down">Offline</div></div>
+            <div class="stat-card"><div class="stat-label">Restarting</div><div class="stat-value" style="color:var(--warning)">1</div><div class="stat-change">In progress</div></div>
+        </div>
+
+        <div class="vps-card">
+            <div class="vps-header">
+                <div class="vps-name">🖥 VPS-01 — Main Production</div>
+                <div class="vps-status"><span class="status-dot dot-green"></span><span style="color:var(--success)">Online</span></div>
+            </div>
+            <div class="vps-meta">
+                <div class="vps-meta-item">📍 Region: Singapore</div>
+                <div class="vps-meta-item">🔧 OS: Ubuntu 22.04 LTS</div>
+                <div class="vps-meta-item">💻 CPU: 4 Core — 34%</div>
+                <div class="vps-meta-item">🧠 RAM: 8 GB — 45%</div>
+                <div class="vps-meta-item">💾 Storage: 100 GB SSD — 38%</div>
+                <div class="vps-meta-item">🌐 IP: 103.55.12.8</div>
+            </div>
+            <div style="margin-top:12px"><div class="progress-bar"><div class="progress-fill fill-accent" style="width:34%"></div></div></div>
+            <div class="vps-actions">
+                <button class="vps-btn vps-btn-restart" onclick="vpsAction('VPS-01','restart')">🔄 Restart</button>
+                <button class="vps-btn vps-btn-stop" onclick="vpsAction('VPS-01','stop')">⏹ Stop</button>
+                <button class="vps-btn vps-btn-console" onclick="openModal('vpsConsoleModal')">💻 Console</button>
+            </div>
+        </div>
+
+        <div class="vps-card">
+            <div class="vps-header">
+                <div class="vps-name">🖥 VPS-02 — Backup Server</div>
+                <div class="vps-status"><span class="status-dot dot-green"></span><span style="color:var(--success)">Online</span></div>
+            </div>
+            <div class="vps-meta">
+                <div class="vps-meta-item">📍 Region: Tokyo</div>
+                <div class="vps-meta-item">🔧 OS: Debian 12</div>
+                <div class="vps-meta-item">💻 CPU: 2 Core — 18%</div>
+                <div class="vps-meta-item">🧠 RAM: 4 GB — 28%</div>
+                <div class="vps-meta-item">💾 Storage: 50 GB SSD — 55%</div>
+                <div class="vps-meta-item">🌐 IP: 45.77.223.14</div>
+            </div>
+            <div style="margin-top:12px"><div class="progress-bar"><div class="progress-fill fill-success" style="width:18%"></div></div></div>
+            <div class="vps-actions">
+                <button class="vps-btn vps-btn-restart" onclick="vpsAction('VPS-02','restart')">🔄 Restart</button>
+                <button class="vps-btn vps-btn-stop" onclick="vpsAction('VPS-02','stop')">⏹ Stop</button>
+                <button class="vps-btn vps-btn-console" onclick="openModal('vpsConsoleModal')">💻 Console</button>
+            </div>
+        </div>
+
+        <div class="vps-card">
+            <div class="vps-header">
+                <div class="vps-name">🖥 VPS-03 — Dev Environment</div>
+                <div class="vps-status"><span class="status-dot dot-yellow"></span><span style="color:var(--warning)">Restarting...</span></div>
+            </div>
+            <div class="vps-meta">
+                <div class="vps-meta-item">📍 Region: Frankfurt</div>
+                <div class="vps-meta-item">🔧 OS: CentOS 9</div>
+                <div class="vps-meta-item">💻 CPU: 8 Core — —</div>
+                <div class="vps-meta-item">🧠 RAM: 16 GB — —</div>
+                <div class="vps-meta-item">💾 Storage: 200 GB SSD — 71%</div>
+                <div class="vps-meta-item">🌐 IP: 89.149.204.12</div>
+            </div>
+            <div style="margin-top:12px"><div class="progress-bar"><div class="progress-fill fill-warning" style="width:70%;animation: pulse 1s infinite"></div></div></div>
+            <div class="vps-actions">
+                <button class="vps-btn vps-btn-start" onclick="vpsAction('VPS-03','start')">▶ Force Start</button>
+                <button class="vps-btn vps-btn-console" onclick="openModal('vpsConsoleModal')">💻 Console</button>
+            </div>
+        </div>
+
+        <div class="vps-card">
+            <div class="vps-header">
+                <div class="vps-name">🖥 VPS-04 — Staging</div>
+                <div class="vps-status"><span class="status-dot dot-red"></span><span style="color:var(--danger)">Stopped</span></div>
+            </div>
+            <div class="vps-meta">
+                <div class="vps-meta-item">📍 Region: Jakarta</div>
+                <div class="vps-meta-item">🔧 OS: Ubuntu 20.04</div>
+                <div class="vps-meta-item">💻 CPU: 2 Core — 0%</div>
+                <div class="vps-meta-item">🧠 RAM: 2 GB — 0%</div>
+                <div class="vps-meta-item">💾 Storage: 30 GB HDD — 40%</div>
+                <div class="vps-meta-item">🌐 IP: 103.189.123.5</div>
+            </div>
+            <div style="margin-top:12px"><div class="progress-bar"><div class="progress-fill fill-danger" style="width:0%"></div></div></div>
+            <div class="vps-actions">
+                <button class="vps-btn vps-btn-start" onclick="vpsAction('VPS-04','start')">▶ Start</button>
+                <button class="vps-btn vps-btn-console" onclick="alert('VPS tidak dapat dibuka: Stopped')">💻 Console</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ════════════════ FLUTTER BUILDER PAGE ════════════════ -->
+    <div id="builderPage" class="page">
+        <div class="section-title">📦 Flutter Builder</div>
+        <div style="background:rgba(0,212,255,0.07);border:1px solid rgba(0,212,255,0.2);border-radius:12px;padding:18px;margin-bottom:20px">
+            <div style="font-size:14px;font-weight:700;margin-bottom:8px;color:var(--accent)">⚡ Cloud Build Service</div>
+            <div style="font-size:12px;color:var(--text-dim)">Build APK, AAB, dan IPA dari project Flutter kamu secara cloud tanpa perlu setup environment lokal.</div>
+        </div>
+
+        <div class="section-title">📋 Build Steps</div>
+        <div class="build-step">
+            <div class="step-num">1</div>
+            <div class="step-content"><div class="step-title">Upload Project</div><div class="step-desc">Upload file .zip dari project Flutter Anda. Pastikan sudah ada pubspec.yaml di root folder.</div></div>
+        </div>
+        <div class="build-step">
+            <div class="step-num">2</div>
+            <div class="step-content"><div class="step-title">Konfigurasi Build</div><div class="step-desc">Pilih target platform (Android/iOS), mode build (Debug/Release), dan atur signing key jika diperlukan.</div></div>
+        </div>
+        <div class="build-step">
+            <div class="step-num">3</div>
+            <div class="step-content"><div class="step-title">Jalankan Build</div><div class="step-desc">Klik "Start Build" dan sistem akan otomatis menjalankan flutter build. Estimasi waktu 3-8 menit.</div></div>
+        </div>
+        <div class="build-step">
+            <div class="step-num">4</div>
+            <div class="step-content"><div class="step-title">Download Hasil</div><div class="step-desc">Setelah build selesai, file APK/AAB/IPA bisa langsung didownload dari panel history.</div></div>
+        </div>
+
+        <div class="section-title">🚀 New Build</div>
+        <div style="background:rgba(26,31,58,0.7);border:1px solid rgba(0,212,255,0.15);border-radius:12px;padding:20px">
+            <div class="input-group"><div class="input-label">Project Name</div><input class="input-field" type="text" placeholder="Nama project Anda..." id="buildProjectName"></div>
+            <div class="input-group"><div class="input-label">Target Platform</div><select class="input-field" id="buildPlatform"><option>Android APK</option><option>Android AAB</option><option>iOS IPA</option></select></div>
+            <div class="input-group"><div class="input-label">Build Mode</div><select class="input-field" id="buildMode"><option>Release</option><option>Debug</option><option>Profile</option></select></div>
+            <div class="input-group"><div class="input-label">Flutter Version</div><select class="input-field"><option>3.22.x (Latest)</option><option>3.19.x</option><option>3.16.x</option></select></div>
+            <button class="btn btn-primary" onclick="startBuild()">🚀 Start Build</button>
+        </div>
+
+        <div class="section-title">📜 Build History</div>
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>Project</th><th>Platform</th><th>Mode</th><th>Status</th><th>Time</th><th>Download</th></tr></thead>
+                <tbody>
+                    <tr><td>noxa_app</td><td>APK</td><td>Release</td><td><span class="tag tag-success">✓ Done</span></td><td>4m 12s</td><td><button class="btn btn-success" style="padding:3px 10px;font-size:11px" onclick="alert('Downloading noxa_app.apk...')">⬇ APK</button></td></tr>
+                    <tr><td>noxa_store</td><td>AAB</td><td>Release</td><td><span class="tag tag-success">✓ Done</span></td><td>6m 03s</td><td><button class="btn btn-success" style="padding:3px 10px;font-size:11px" onclick="alert('Downloading noxa_store.aab...')">⬇ AAB</button></td></tr>
+                    <tr><td>noxa_beta</td><td>APK</td><td>Debug</td><td><span class="tag tag-danger">✗ Failed</span></td><td>1m 44s</td><td><button class="btn btn-danger" style="padding:3px 10px;font-size:11px" onclick="openModal('buildLogModal')">📋 Log</button></td></tr>
+                    <tr><td>noxa_v2</td><td>AAB</td><td>Release</td><td><span class="tag tag-warning">⏳ Building</span></td><td>—</td><td>—</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ════════════════ NEWS PAGE ════════════════ -->
+    <div id="newsPage" class="page">
+        <div class="section-title">📢 News Center</div>
+
+        <div class="news-card" onclick="openModal('news1Modal')">
+            <div class="news-icon-wrap">🎉</div>
+            <div class="news-content">
+                <div class="news-title">NOXA HUB v2.0 Resmi Diluncurkan!</div>
+                <div class="news-excerpt">Update besar dengan tampilan baru, fitur VPS Manager, Flutter Builder, dan banyak improvement lainnya yang sudah ditunggu-tunggu komunitas.</div>
+                <div class="news-meta"><span>📅 31 Mei 2026</span><span>👤 Admin NOXA</span><span class="tag tag-success">New</span></div>
+            </div>
+        </div>
+
+        <div class="news-card" onclick="openModal('news2Modal')">
+            <div class="news-icon-wrap">🔒</div>
+            <div class="news-content">
+                <div class="news-title">Update Keamanan Sistem — Critical Patch</div>
+                <div class="news-excerpt">Tim security NOXA telah melakukan patching terhadap beberapa celah keamanan yang ditemukan pada panel authentication dan API gateway.</div>
+                <div class="news-meta"><span>📅 28 Mei 2026</span><span>👤 Security Team</span><span class="tag tag-danger">Security</span></div>
+            </div>
+        </div>
+
+        <div class="news-card" onclick="openModal('news3Modal')">
+            <div class="news-icon-wrap">⚡</div>
+            <div class="news-content">
+                <div class="news-title">Server Singapore Upgrade ke NVMe SSD</div>
+                <div class="news-excerpt">VPS di region Singapore kini menggunakan NVMe SSD generasi terbaru. Kecepatan baca/tulis meningkat hingga 3x lipat dari sebelumnya.</div>
+                <div class="news-meta"><span>📅 25 Mei 2026</span><span>👤 Infra Team</span><span class="tag tag-accent">Infra</span></div>
+            </div>
+        </div>
+
+        <div class="news-card" onclick="openModal('news4Modal')">
+            <div class="news-icon-wrap">🤝</div>
+            <div class="news-content">
+                <div class="news-title">Partnership Baru dengan CloudFlare Enterprise</div>
+                <div class="news-excerpt">NOXA resmi bermitra dengan Cloudflare untuk memberikan proteksi DDoS dan CDN terbaik bagi seluruh pengguna layanan hosting.</div>
+                <div class="news-meta"><span>📅 20 Mei 2026</span><span>👤 CEO NOXA</span><span class="tag tag-warning">Partnership</span></div>
+            </div>
+        </div>
+
+        <div class="news-card" onclick="openModal('news5Modal')">
+            <div class="news-icon-wrap">📦</div>
+            <div class="news-content">
+                <div class="news-title">Flutter Builder Hadir: Build Cloud APK</div>
+                <div class="news-excerpt">Fitur Flutter Builder kini tersedia! Build APK dan AAB langsung dari browser tanpa perlu setup Flutter di lokal. Cukup upload ZIP, tunggu hasilnya.</div>
+                <div class="news-meta"><span>📅 15 Mei 2026</span><span>👤 Dev Team</span><span class="tag tag-accent">Feature</span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ════════════════ TEAM PAGE ════════════════ -->
+    <div id="teamPage" class="page">
+        <div class="section-title">👥 Team NOXA</div>
+        <div style="text-align:center;margin-bottom:25px;font-size:13px;color:var(--text-dim)">Tim profesional di balik NOXA HUB Platform</div>
+        <div class="team-grid">
+            <div class="team-card">
+                <div class="team-avatar">👑</div>
+                <div class="team-name">NOXA</div>
+                <div class="team-role">Founder & CEO</div>
+                <div class="team-desc">Visioner di balik NOXA HUB. Full-stack developer dengan 7+ tahun pengalaman membangun platform skala enterprise.</div>
+                <div class="team-socials">
+                    <div class="social-btn" onclick="alert('Telegram: @noxa_owner')">✈</div>
+                    <div class="social-btn" onclick="alert('GitHub: github.com/noxa')">🐙</div>
+                    <div class="social-btn" onclick="alert('Instagram: @noxa.dev')">📸</div>
+                </div>
+            </div>
+            <div class="team-card">
+                <div class="team-avatar">🛡</div>
+                <div class="team-name">Rian Dev</div>
+                <div class="team-role">Lead Developer</div>
+                <div class="team-desc">Backend architect & DevOps specialist. Expert di Golang, Docker, Kubernetes, dan cloud infrastructure.</div>
+                <div class="team-socials">
+                    <div class="social-btn" onclick="alert('Telegram: @rian_dev')">✈</div>
+                    <div class="social-btn" onclick="alert('GitHub: github.com/riandev')">🐙</div>
+                </div>
+            </div>
+            <div class="team-card">
+                <div class="team-avatar">🎨</div>
+                <div class="team-name">Zara UI</div>
+                <div class="team-role">UI/UX Designer</div>
+                <div class="team-desc">Desainer kreatif yang bertanggung jawab atas tampilan NOXA HUB. Spesialis Figma, motion design, dan user research.</div>
+                <div class="team-socials">
+                    <div class="social-btn" onclick="alert('Instagram: @zara.ui')">📸</div>
+                    <div class="social-btn" onclick="alert('Dribbble: dribbble.com/zaraui')">🎯</div>
+                </div>
+            </div>
+            <div class="team-card">
+                <div class="team-avatar">🔒</div>
+                <div class="team-name">Haxor99</div>
+                <div class="team-role">Security Expert</div>
+                <div class="team-desc">Bug hunter bersertifikat CEH & OSCP. Menjaga keamanan seluruh infrastruktur NOXA dari ancaman siber.</div>
+                <div class="team-socials">
+                    <div class="social-btn" onclick="alert('Telegram: @haxor99')">✈</div>
+                </div>
+            </div>
+            <div class="team-card">
+                <div class="team-avatar">📱</div>
+                <div class="team-name">FlutterKing</div>
+                <div class="team-role">Mobile Developer</div>
+                <div class="team-desc">Flutter & Dart specialist. Membangun aplikasi mobile NOXA untuk Android dan iOS dengan performa tinggi.</div>
+                <div class="team-socials">
+                    <div class="social-btn" onclick="alert('GitHub: github.com/flutterking')">🐙</div>
+                    <div class="social-btn" onclick="alert('Twitter: @flutterking_id')">🐦</div>
+                </div>
+            </div>
+            <div class="team-card">
+                <div class="team-avatar">🌐</div>
+                <div class="team-name">NetOps</div>
+                <div class="team-role">Network Engineer</div>
+                <div class="team-desc">Mengelola infrastruktur jaringan NOXA. Ahli BGP, CDN, load balancing, dan optimasi latency global.</div>
+                <div class="team-socials">
+                    <div class="social-btn" onclick="alert('LinkedIn: linkedin.com/in/netops')">💼</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-title">📊 Team Stats</div>
+        <div class="stats-grid">
+            <div class="stat-card"><div class="stat-label">Total Members</div><div class="stat-value">12</div><div class="stat-change">Aktif semua</div></div>
+            <div class="stat-card"><div class="stat-label">Projects Done</div><div class="stat-value">247</div><div class="stat-change">▲ +12 bulan ini</div></div>
+            <div class="stat-card"><div class="stat-label">Uptime SLA</div><div class="stat-value">99.9%</div><div class="stat-change">▲ Excellent</div></div>
+            <div class="stat-card"><div class="stat-label">Avg Response</div><div class="stat-value">&lt;2h</div><div class="stat-change">Support time</div></div>
+        </div>
+    </div>
+
+</div><!-- end container -->
+
+<!-- BOTTOM NAVIGATION -->
+<div class="bottom-nav">
+    <div class="nav-item active" id="nav-home" onclick="showPage('home')"><div class="nav-item-icon">🏠</div><div class="nav-item-label">Home</div></div>
+    <div class="nav-item" id="nav-dashboard" onclick="showPage('dashboard')"><div class="nav-item-icon">📊</div><div class="nav-item-label">Dash</div></div>
+    <div class="nav-item" id="nav-tools" onclick="showPage('tools')"><div class="nav-item-icon">🛠</div><div class="nav-item-label">Tools</div></div>
+    <div class="nav-item" id="nav-news" onclick="showPage('news')"><div class="nav-item-icon">📢</div><div class="nav-item-label">News</div></div>
+    <div class="nav-item" id="nav-profile" onclick="openModal('profileModal')"><div class="nav-item-icon">👤</div><div class="nav-item-label">Profile</div></div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     ALL MODALS
+═══════════════════════════════════════ -->
+
+<!-- Weather Modal -->
+<div id="weatherModal" class="modal"><div class="modal-content">
+    <div class="modal-header">🌤 Weather <span class="modal-close" onclick="closeModal('weatherModal')">&times;</span></div>
+    <div class="modal-body">
+        <p>📍 <strong>Jakarta, Indonesia</strong></p>
+        <p>🌡 Temperature: <strong>29°C</strong> (feels like 33°C)</p>
+        <p>☀ Condition: <strong>Partly Sunny</strong></p>
+        <p>💧 Humidity: <strong>75%</strong></p>
+        <p>🌬 Wind: <strong>12 km/h</strong> SW</p>
+        <p>🌅 Sunrise: <strong>05:56 AM</strong></p>
+        <p>🌇 Sunset: <strong>05:48 PM</strong></p>
+        <p>☔ Rain Chance: <strong>20%</strong></p>
+        <p>👁 Visibility: <strong>8 km</strong></p>
+        <button class="btn btn-primary" onclick="alert('Weather refreshed!')">🔄 Refresh</button>
+    </div>
+</div></div>
+
+<!-- Music Modal -->
+<div id="musicModal" class="modal"><div class="modal-content">
+    <div class="modal-header">🎵 Music Player <span class="modal-close" onclick="closeModal('musicModal')">&times;</span></div>
+    <div class="modal-body">
+        <p>🎧 Now Playing: <strong>NOXA Theme — Ambient Synthwave</strong></p>
+        <div class="progress-wrap"><div class="progress-label"><span>1:32</span><span>3:45</span></div><div class="progress-bar"><div class="progress-fill fill-accent" style="width:41%"></div></div></div>
+        <p>📀 Volume: 65% | 🔀 Shuffle: ON | 🔁 Repeat: OFF</p>
+        <div style="display:flex;gap:8px;margin-top:15px;flex-wrap:wrap">
+            <button class="btn btn-primary">⏮</button>
+            <button class="btn btn-primary">⏸ Pause</button>
+            <button class="btn btn-primary">⏭</button>
+            <button class="btn btn-primary">🔀 Shuffle</button>
+        </div>
+        <br><strong style="color:var(--accent);font-size:13px">Playlist:</strong>
+        <ul>
+            <li>NOXA Theme — Ambient Synthwave ▶</li>
+            <li>Dark Code — Lofi Beats</li>
+            <li>Digital Rain — Cyberpunk OST</li>
+            <li>Hack The Planet — Electronic</li>
+            <li>Night Drive — Synthwave</li>
+        </ul>
+    </div>
+</div></div>
+
+<!-- Notif Modal -->
+<div id="notifModal" class="modal"><div class="modal-content">
+    <div class="modal-header">🔔 Notifications <span class="modal-close" onclick="closeModal('notifModal')">&times;</span></div>
+    <div class="modal-body">
+        <ul>
+            <li>✅ NOXA HUB v2.0 berhasil diupdate</li>
+            <li>⚠ 3 login gagal terdeteksi dari IP asing</li>
+            <li>✅ VPS-01 backup berhasil dilakukan</li>
+            <li>📩 Pesan baru dari tim support</li>
+            <li>🎁 Daily reward tersedia! Klaim sekarang</li>
+            <li>🔒 SSL noxa.id diperpanjang otomatis</li>
+            <li>📦 Build noxa_app.apk selesai</li>
+        </ul>
+        <button class="btn btn-danger" onclick="alert('Semua notifikasi dihapus!')">🗑 Clear All</button>
+        <button class="btn btn-primary" onclick="alert('Semua ditandai terbaca!')">✓ Mark All Read</button>
+    </div>
+</div></div>
+
+<!-- Profile Modal -->
+<div id="profileModal" class="modal"><div class="modal-content">
+    <div class="modal-header">👤 User Profile <span class="modal-close" onclick="closeModal('profileModal')">&times;</span></div>
+    <div class="modal-body">
+        <div style="text-align:center;margin-bottom:20px">
+            <div style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#ff3366);display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 12px;border:3px solid rgba(0,212,255,0.4)">👑</div>
+            <div style="font-size:20px;font-weight:800">NOXA</div>
+            <div style="font-size:12px;color:var(--accent)">Owner & Founder</div>
+        </div>
+        <p><strong>Username:</strong> NOXA</p>
+        <p><strong>Email:</strong> noxa@noxa.id</p>
+        <p><strong>Role:</strong> 👑 Owner</p>
+        <p><strong>Status:</strong> 🌟 Premium User</p>
+        <p><strong>Join Date:</strong> 31 Mei 2026</p>
+        <p><strong>Level:</strong> 25 (80%)</p>
+        <p><strong>XP:</strong> 12,450 / 15,000</p>
+        <div class="progress-wrap"><div class="progress-bar"><div class="progress-fill fill-accent" style="width:80%"></div></div></div>
+        <button class="btn btn-primary" onclick="alert('Buka halaman edit profil')">✏ Edit Profile</button>
+        <button class="btn btn-warning" onclick="alert('Buka ganti password')">🔑 Change Password</button>
+    </div>
+</div></div>
+
+<!-- Settings Modal -->
+<div id="settingsModal" class="modal"><div class="modal-content">
+    <div class="modal-header">⚙ Settings <span class="modal-close" onclick="closeModal('settingsModal')">&times;</span></div>
+    <div class="modal-body">
+        <ul>
+            <li>🌙 Dark Mode — <span class="tag tag-success">Active</span></li>
+            <li>🌍 Language — Indonesia</li>
+            <li>🔒 Two-Factor Auth — <span class="tag tag-success">Enabled</span></li>
+            <li>🔔 Push Notifications — ON</li>
+            <li>💾 Auto Backup — Daily</li>
+            <li>🔄 Auto Update — <span class="tag tag-success">Enabled</span></li>
+            <li>📊 Analytics Sharing — OFF</li>
+            <li>⚠ Reset ke Default</li>
+        </ul>
+        <button class="btn btn-primary" onclick="alert('Pengaturan tersimpan!')">💾 Save Changes</button>
+        <button class="btn btn-danger" onclick="confirm('Reset semua pengaturan?') && alert('Reset done!')">↩ Reset</button>
+    </div>
+</div></div>
+
+<!-- Help Modal -->
+<div id="helpModal" class="modal"><div class="modal-content">
+    <div class="modal-header">❓ Help Center <span class="modal-close" onclick="closeModal('helpModal')">&times;</span></div>
+    <div class="modal-body">
+        <ul>
+            <li>📚 FAQ — Pertanyaan yang sering ditanyakan</li>
+            <li>🎓 Video Tutorial — Panduan penggunaan fitur</li>
+            <li>🐛 Report Bug — Laporkan masalah teknis</li>
+            <li>💬 Live Chat — Support online 24/7</li>
+            <li>📧 Email: support@noxa.id</li>
+            <li>📖 Dokumentasi API: docs.noxa.id</li>
+        </ul>
+        <button class="btn btn-primary" onclick="alert('Membuka live chat...')">💬 Live Chat</button>
+    </div>
+</div></div>
+
+<!-- Contact Modal -->
+<div id="contactModal" class="modal"><div class="modal-content">
+    <div class="modal-header">📞 Contact Admin <span class="modal-close" onclick="closeModal('contactModal')">&times;</span></div>
+    <div class="modal-body">
+        <ul>
+            <li>📱 WhatsApp: +62 812-3456-7890</li>
+            <li>✈ Telegram: @noxa_admin</li>
+            <li>🎮 Discord: discord.gg/noxa</li>
+            <li>📧 Email: admin@noxa.id</li>
+            <li>🌐 Website: www.noxa.id</li>
+            <li>🕐 Support Hours: 08.00–23.00 WIB</li>
+        </ul>
+        <button class="btn btn-primary" onclick="alert('Kontak disalin ke clipboard!')">📋 Copy All</button>
+    </div>
+</div></div>
+
+<!-- Top Up Modal -->
+<div id="topupModal" class="modal"><div class="modal-content">
+    <div class="modal-header">➕ Top Up Saldo <span class="modal-close" onclick="closeModal('topupModal')">&times;</span></div>
+    <div class="modal-body">
+        <div class="input-group"><div class="input-label">Jumlah Top Up</div><input class="input-field" type="number" placeholder="Rp 0" id="topupAmount"></div>
+        <div class="input-group"><div class="input-label">Metode Pembayaran</div><select class="input-field"><option>Transfer Bank BCA</option><option>Transfer Bank Mandiri</option><option>DANA</option><option>GoPay</option><option>OVO</option><option>QRIS</option></select></div>
+        <p style="font-size:12px;color:var(--text-dim)">Minimum top up: Rp 10.000 | Maksimum: Rp 50.000.000</p>
+        <button class="btn btn-success" onclick="processTopup()">✅ Proses Top Up</button>
+    </div>
+</div></div>
+
+<!-- Withdraw Modal -->
+<div id="withdrawModal" class="modal"><div class="modal-content">
+    <div class="modal-header">➖ Tarik Dana <span class="modal-close" onclick="closeModal('withdrawModal')">&times;</span></div>
+    <div class="modal-body">
+        <div class="input-group"><div class="input-label">Jumlah Tarik</div><input class="input-field" type="number" placeholder="Rp 0"></div>
+        <div class="input-group"><div class="input-label">Rekening Tujuan</div><input class="input-field" type="text" placeholder="No. Rekening / Akun"></div>
+        <div class="input-group"><div class="input-label">Metode</div><select class="input-field"><option>BCA</option><option>Mandiri</option><option>DANA</option><option>GoPay</option></select></div>
+        <p style="font-size:12px;color:var(--text-dim)">Proses: 1x24 jam kerja | Fee: Rp 2.500</p>
+        <button class="btn btn-danger" onclick="alert('Permintaan tarik dana dikirim!')">💸 Tarik Dana</button>
+    </div>
+</div></div>
+
+<!-- Transfer Modal -->
+<div id="transferModal" class="modal"><div class="modal-content">
+    <div class="modal-header">↔ Transfer Internal <span class="modal-close" onclick="closeModal('transferModal')">&times;</span></div>
+    <div class="modal-body">
+        <div class="input-group"><div class="input-label">Username Penerima</div><input class="input-field" type="text" placeholder="@username"></div>
+        <div class="input-group"><div class="input-label">Jumlah Transfer</div><input class="input-field" type="number" placeholder="Rp 0"></div>
+        <div class="input-group"><div class="input-label">Catatan (opsional)</div><input class="input-field" type="text" placeholder="Catatan transfer..."></div>
+        <button class="btn btn-primary" onclick="alert('Transfer berhasil!')">✅ Kirim</button>
+    </div>
+</div></div>
+
+<!-- IP Checker Modal -->
+<div id="ipCheckModal" class="modal"><div class="modal-content">
+    <div class="modal-header">🌐 IP Checker <span class="modal-close" onclick="closeModal('ipCheckModal')">&times;</span></div>
+    <div class="modal-body">
+        <div class="input-group"><div class="input-label">IP Address / Domain</div><input class="input-field" type="text" id="ipInput" placeholder="Contoh: 8.8.8.8 atau google.com"></div>
+        <button class="btn btn-primary" onclick="checkIP()">🔍 Check IP</button>
+        <div class="terminal" id="ipOutput" style="margin-top:15px;min-height:80px">// Masukkan IP/domain lalu klik Check IP</div>
+    </div>
+</div></div>
+
+<!-- Ping Modal -->
+<div id="pingModal" class="modal"><div class="modal-content">
+    <div class="modal-header">📡 Ping Tool <span class="modal-close" onclick="closeModal('pingModal')">&times;</span></div>
+    <div class="modal-body">
+        <div class="input-group"><div class="input-label">Host / IP / Domain</div><input class="input-field" type="text" id="pingHost" placeholder="Contoh: noxa.id atau 8.8.8.8"></div>
+        <div class="input-group"><div class="input-label">Jumlah Ping</div><select class="input-field" id="pingCount"><option>4</option><option>8</option><option>16</option></select></div>
+        <button class="btn btn-primary" onclick="runPing()">📡 Ping</button>
+        <div class="terminal" id="pingOutput" style="margin-top:15px;min-height:100px">// Masukkan host lalu klik Ping</div>
+    </div>
+</div></div>
+
+<!-- Password Generator Modal -->
+<div id="passGenModal" class="modal"><div class="modal-content">
+    <div class="modal-header">🔑 Password Generator <span class="modal-close" onclick="closeModal('passGenModal')">&times;</span></div>
+    <div class="modal-body">
+        <div class="input-group"><div class="input-label">Panjang Password</div><input class="input-field" type="number" id="passLength" value="16" min="8" max="64"></div>
+        <div class="input-group"><div class="input-label">Opsi</div>
+            <label style="font-size:13px;display:block;margin:5px 0"><input type="checkbox" id="useUpper" checked> Huruf Besar (A-Z)</label>
+            <label style="font-size:13px;display:block;margin:5px 0"><input type="checkbox" id="useLower" checked> Huruf Kecil (a-z)</label>
+            <label style="font-size:13px;display:block;margin:5px 0"><input type="checkbox" id="useNum" checked> Angka (0-9)</label>
+            <label style="font-size:13px;display:block;margin:5px 0"><input type="checkbox" id="useSym"> Simbol (!@#$%)</label>
+        </div>
+        <button class="btn btn-primary" onclick="generatePass()">🔄 Generate</button>
+        <div class="terminal" id="passOutput" style="margin-top:15px;min-height:60px">// Klik Generate untuk membuat password</div>
+    </div>
+</div></div>
+
+<!-- Base64 Modal -->
+<div id="base64Modal" class="modal"><div class="modal-content">
+    <div class="modal-header">🔐 Base64 Encoder <span class="modal-close" onclick="closeModal('base64Modal')">&times;</span></div>
+    <div class="modal-body">
+        <div class="input-group"><div class="input-label">Input Teks</div><textarea class="input-field" id="b64Input" rows="4" placeholder="Masukkan teks atau Base64..."></textarea></div>
+        <button class="btn btn-primary" onclick="encodeB64()">🔒 Encode</button>
+        <button class="btn btn-warning" onclick="decodeB64()">🔓 Decode</button>
+        <div class="terminal" id="b64Output" style="margin-top:15px;min-height:60px">// Output akan muncul di sini</div>
+    </div>
+</div></div>
+
+<!-- QR Modal -->
+<div id="qrModal" class="modal"><div class="modal-content">
+    <div class="modal-header">📷 QR Generator <span class="modal-close" onclick="closeModal('qrModal')">&times;</span></div>
+    <div class="modal-body">
+        <div class="input-group"><div class="input-label">URL / Teks</div><input class="input-field" type="text" id="qrInput" placeholder="https://noxa.id"></div>
+        <button class="btn btn-primary" onclick="generateQR()">📷 Generate QR</button>
+        <div id="qrOutput" style="margin-top:15px;text-align:center;min-height:60px"></div>
+    </div>
+</div></div>
+
+<!-- Hash Modal -->
+<div id="hashModal" class="modal"><div class="modal-content">
+    <div class="modal-header">🔒 Hash Generator <span class="modal-close" onclick="closeModal('hashModal')">&times;</span></div>
+    <div class="modal-body">
+        <div class="input-group"><div class="input-label">Input Teks</div><input class="input-field" type="text" id="hashInput" placeholder="Teks yang ingin di-hash..."></div>
+        <button class="btn btn-primary" onclick="generateHash()">⚡ Generate Hash</button>
+        <div class="terminal" id="hashOutput" style="margin-top:15px;min-height:80px">// Output hash akan muncul di sini</div>
+    </div>
+</div></div>
+
+<!-- Calc Modal -->
+<div id="calcModal" class="modal"><div class="modal-content">
+    <div class="modal-header">🧮 Kalkulator <span class="modal-close" onclick="closeModal('calcModal')">&times;</span></div>
+    <div class="modal-body">
+        <div style="background:#000;border-radius:8px;padding:15px;margin-bottom:15px;text-align:right">
+            <div id="calcDisplay" style="font-family:'Courier Prime',monospace;font-size:28px;color:var(--accent);min-height:40px">0</div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
+            <button class="btn btn-danger" onclick="calcClear()" style="grid-column:span 2">C Clear</button>
+            <button class="btn btn-warning" onclick="calcOp('/')" style="color:#000">÷</button>
+            <button class="btn btn-warning" onclick="calcOp('*')" style="color:#000">×</button>
+            <button class="btn btn-primary" onclick="calcNum('7')" style="color:#000">7</button>
+            <button class="btn btn-primary" onclick="calcNum('8')" style="color:#000">8</button>
+            <button class="btn btn-primary" onclick="calcNum('9')" style="color:#000">9</button>
+            <button class="btn btn-warning" onclick="calcOp('-')" style="color:#000">−</button>
+            <button class="btn btn-primary" onclick="calcNum('4')" style="color:#000">4</button>
+            <button class="btn btn-primary" onclick="calcNum('5')" style="color:#000">5</button>
+            <button class="btn btn-primary" onclick="calcNum('6')" style="color:#000">6</button>
+            <button class="btn btn-warning" onclick="calcOp('+')" style="color:#000">+</button>
+            <button class="btn btn-primary" onclick="calcNum('1')" style="color:#000">1</button>
+            <button class="btn btn-primary" onclick="calcNum('2')" style="color:#000">2</button>
+            <button class="btn btn-primary" onclick="calcNum('3')" style="color:#000">3</button>
+            <button class="btn btn-success" onclick="calcEquals()" style="grid-row:span 2">=</button>
+            <button class="btn btn-primary" onclick="calcNum('0')" style="grid-column:span 2;color:#000">0</button>
+            <button class="btn btn-primary" onclick="calcNum('.')" style="color:#000">.</button>
+        </div>
+    </div>
+</div></div>
+
+<!-- Converter Modal -->
+<div id="converterModal" class="modal"><div class="modal-content">
+    <div class="modal-header">🔄 Unit Converter <span class="modal-close" onclick="closeModal('converterModal')">&times;</span></div>
+    <div class="modal-body">
+        <div class="input-group"><div class="input-label">Tipe Konversi</div><select class="input-field" id="convType" onchange="doConvert()"><option value="bytes">Byte / KB / MB / GB</option><option value="px">px → rem → em</option><option value="time">ms → s → m</option></select></div>
+        <div class="input-group"><div class="input-label">Nilai Input</div><input class="input-field" type="number" id="convInput" placeholder="Masukkan nilai..." oninput="doConvert()"></div>
+        <div class="terminal" id="convOutput" style="margin-top:12px;min-height:80px">// Isi nilai untuk melihat hasil konversi</div>
+    </div>
+</div></div>
+
+<!-- JSON Modal -->
+<div id="jsonModal" class="modal"><div class="modal-content">
+    <div class="modal-header">📋 JSON Formatter <span class="modal-close" onclick="closeModal('jsonModal')">&times;</span></div>
+    <div class="modal-body">
+        <div class="input-group"><div class="input-label">Input JSON</div><textarea class="input-field" id="jsonInput" rows="5" placeholder='{"key":"value","arr":[1,2,3]}'></textarea></div>
+        <button class="btn btn-primary" onclick="formatJSON()">✨ Format</button>
+        <button class="btn btn-warning" onclick="minifyJSON()">🗜 Minify</button>
+        <button class="btn btn-success" onclick="validateJSON()">✓ Validate</button>
+        <div class="terminal" id="jsonOutput" style="margin-top:15px;min-height:80px">// Output JSON akan muncul di sini</div>
+    </div>
+</div></div>
+
+<!-- Domain Modal -->
+<div id="domainModal" class="modal"><div class="modal-content">
+    <div class="modal-header">🌐 Domain Manager <span class="modal-close" onclick="closeModal('domainModal')">&times;</span></div>
+    <div class="modal-body">
+        <p><strong>Domain:</strong> noxa.id</p>
+        <ul>
+            <li>🔄 Update Nameserver</li>
+            <li>📝 Manage DNS Records</li>
+            <li>🔒 SSL / HTTPS Settings</li>
+            <li>📊 Traffic Analytics</li>
+            <li>🛡 DDOS Protection</li>
+            <li>🔄 Domain Renewal</li>
+        </ul>
+        <button class="btn btn-primary" onclick="alert('Membuka DNS Editor...')">📝 Edit DNS</button>
+    </div>
+</div></div>
+
+<!-- DB Modal -->
+<div id="dbModal" class="modal"><div class="modal-content">
+    <div class="modal-header">🗄 Database Manager <span class="modal-close" onclick="closeModal('dbModal')">&times;</span></div>
+    <div class="modal-body">
+        <ul>
+            <li>📋 Browse Tables</li>
+            <li>🔍 Run SQL Query</li>
+            <li>💾 Export / Import</li>
+            <li>📊 Database Statistics</li>
+            <li>🔄 Optimize Tables</li>
+            <li>🗑 Drop / Truncate Table</li>
+        </ul>
+        <button class="btn btn-primary" onclick="alert('Membuka phpMyAdmin...')">🔗 Open phpMyAdmin</button>
+    </div>
+</div></div>
+
+<!-- SSL Modal -->
+<div id="sslModal" class="modal"><div class="modal-content">
+    <div class="modal-header">🔒 Add SSL Certificate <span class="modal-close" onclick="closeModal('sslModal')">&times;</span></div>
+    <div class="modal-body">
+        <div class="input-group"><div class="input-label">Domain</div><input class="input-field" type="text" placeholder="yourdomain.com"></div>
+        <div class="input-group"><div class="input-label">SSL Provider</div><select class="input-field"><option>Let's Encrypt (Free)</option><option>ZeroSSL (Free)</option><option>Comodo (Paid)</option><option>DigiCert (Paid)</option></select></div>
+        <div class="input-group"><div class="input-label">Validasi Method</div><select class="input-field"><option>HTTP-01 Challenge</option><option>DNS-01 Challenge</option><option>TLS-ALPN-01</option></select></div>
+        <button class="btn btn-success" onclick="alert('Proses penerbitan SSL dimulai! Estimasi 2-5 menit.')">🔒 Issue SSL</button>
+    </div>
+</div></div>
+
+<!-- VPS Console Modal -->
+<div id="vpsConsoleModal" class="modal"><div class="modal-content">
+    <div class="modal-header">💻 VPS Console <span class="modal-close" onclick="closeModal('vpsConsoleModal')">&times;</span></div>
+    <div class="modal-body">
+        <div class="terminal" id="vpsConsole">root@vps-01:~# <span id="vpsConsoleOut"></span></div>
+        <div style="display:flex;gap:8px;margin-top:12px">
+            <input class="input-field" type="text" id="vpsCmd" placeholder="Ketik command..." style="flex:1" onkeypress="if(event.key==='Enter')runVpsCmd()">
+            <button class="btn btn-primary" onclick="runVpsCmd()">▶ Run</button>
+        </div>
+        <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap">
+            <button class="btn btn-warning" style="font-size:11px;padding:5px 10px;color:#000" onclick="quickCmd('top')">top</button>
+            <button class="btn btn-warning" style="font-size:11px;padding:5px 10px;color:#000" onclick="quickCmd('df -h')">df -h</button>
+            <button class="btn btn-warning" style="font-size:11px;padding:5px 10px;color:#000" onclick="quickCmd('free -m')">free -m</button>
+            <button class="btn btn-warning" style="font-size:11px;padding:5px 10px;color:#000" onclick="quickCmd('uptime')">uptime</button>
+            <button class="btn btn-warning" style="font-size:11px;padding:5px 10px;color:#000" onclick="quickCmd('ls -la')">ls -la</button>
+        </div>
+    </div>
+</div></div>
+
+<!-- Build Log Modal -->
+<div id="buildLogModal" class="modal"><div class="modal-content">
+    <div class="modal-header">📋 Build Log — noxa_beta <span class="modal-close" onclick="closeModal('buildLogModal')">&times;</span></div>
+    <div class="modal-body">
+        <div class="terminal">
+[INFO] Starting Flutter build...
+[INFO] Flutter 3.22.0 • channel stable
+[INFO] Running: flutter build apk --release
+[INFO] Compiling lib/main.dart for target...
+[WARN] build.gradle: minSdkVersion not set
+[ERROR] Execution failed for task ':app:processReleaseResources'
+[ERROR] Android resource compilation failed
+[ERROR] /res/values/strings.xml:5: error: '&' is not a valid character
+[INFO] Build failed after 1m 44s
+[INFO] Exit code: 1
+        </div>
+        <p style="font-size:12px;color:var(--warning);margin-top:12px">💡 Fix: Escape karakter &amp; di file strings.xml menjadi &amp;amp;</p>
+        <button class="btn btn-warning" onclick="alert('Rebuild dimulai...')">🔄 Rebuild</button>
+    </div>
+</div></div>
+
+<!-- News Modals -->
+<div id="news1Modal" class="modal"><div class="modal-content">
+    <div class="modal-header">🎉 NOXA HUB v2.0 <span class="modal-close" onclick="closeModal('news1Modal')">&times;</span></div>
+    <div class="modal-body">
+        <p>Dengan bangga kami mengumumkan <strong>NOXA HUB v2.0</strong> kini resmi diluncurkan!</p>
+        <p><strong>Fitur Baru:</strong></p>
+        <ul>
+            <li>🖥 VPS Manager — Kontrol server langsung dari browser</li>
+            <li>📦 Flutter Builder — Build APK/AAB cloud tanpa setup lokal</li>
+            <li>📊 Dashboard baru dengan monitoring real-time</li>
+            <li>🛠 Tools Center — 9+ developer tools terintegrasi</li>
+            <li>💰 Finance Center — Kelola keuangan digital</li>
+            <li>🐞 Bug Center — 10 efek visual interaktif</li>
+            <li>🎨 UI/UX baru yang lebih modern dan responsif</li>
+        </ul>
+        <p>Terima kasih atas dukungan seluruh komunitas NOXA!</p>
+        <button class="btn btn-success" onclick="alert('Selamat datang di NOXA HUB v2.0!')">🎉 Celebrate!</button>
+    </div>
+</div></div>
+
+<div id="news2Modal" class="modal"><div class="modal-content">
+    <div class="modal-header">🔒 Security Update <span class="modal-close" onclick="closeModal('news2Modal')">&times;</span></div>
+    <div class="modal-body">
+        <p>Tim security NOXA telah melakukan <strong>critical security patch</strong> pada sistem:</p>
+        <ul>
+            <li>Patch CVE-2026-1234 — Auth bypass vulnerability</li>
+            <li>Fix XSS pada input form API Gateway</li>
+            <li>Rate limiting diperketat: 100 req/min/IP</li>
+            <li>Session token sekarang expire 24 jam</li>
+            <li>2FA wajib untuk akun Owner dan Admin</li>
+        </ul>
+        <p style="color:var(--warning)">⚠ Harap update password Anda jika belum melakukannya dalam 30 hari terakhir.</p>
+        <button class="btn btn-danger" onclick="alert('Membuka halaman ganti password...')">🔑 Ganti Password</button>
+    </div>
+</div></div>
+
+<div id="news3Modal" class="modal"><div class="modal-content">
+    <div class="modal-header">⚡ Server Upgrade <span class="modal-close" onclick="closeModal('news3Modal')">&times;</span></div>
+    <div class="modal-body">
+        <p>Server di region <strong>Singapore</strong> kini telah diupgrade ke <strong>NVMe SSD Gen 4</strong>.</p>
+        <ul>
+            <li>📖 Read Speed: 7.000 MB/s (sebelumnya 550 MB/s)</li>
+            <li>✍ Write Speed: 6.500 MB/s (sebelumnya 520 MB/s)</li>
+            <li>⚡ IOPS: 1.000.000 (sebelumnya 100.000)</li>
+            <li>🌐 Network: Upgrade ke 10 Gbps</li>
+        </ul>
+        <p>Performa aplikasi Anda kini akan jauh lebih cepat dan responsif!</p>
+    </div>
+</div></div>
+
+<div id="news4Modal" class="modal"><div class="modal-content">
+    <div class="modal-header">🤝 Cloudflare Partnership <span class="modal-close" onclick="closeModal('news4Modal')">&times;</span></div>
+    <div class="modal-body">
+        <p>NOXA resmi bermitra dengan <strong>Cloudflare Enterprise</strong> untuk meningkatkan kualitas layanan hosting.</p>
+        <ul>
+            <li>🛡 DDoS Protection hingga 100 Tbps</li>
+            <li>🌐 CDN di 300+ kota di seluruh dunia</li>
+            <li>⚡ Load time berkurang rata-rata 60%</li>
+            <li>🔒 SSL/TLS gratis untuk semua domain</li>
+            <li>🤖 Bot protection otomatis</li>
+        </ul>
+        <p>Semua pengguna hosting NOXA otomatis mendapatkan manfaat ini tanpa biaya tambahan.</p>
+    </div>
+</div></div>
+
+<div id="news5Modal" class="modal"><div class="modal-content">
+    <div class="modal-header">📦 Flutter Builder Launch <span class="modal-close" onclick="closeModal('news5Modal')">&times;</span></div>
+    <div class="modal-body">
+        <p><strong>Flutter Builder</strong> kini hadir di NOXA HUB!</p>
+        <ul>
+            <li>Build APK, AAB, dan IPA tanpa setup lokal</li>
+            <li>Support Flutter 3.16.x hingga 3.22.x (Latest)</li>
+            <li>Build history tersimpan selama 30 hari</li>
+            <li>Notifikasi build selesai via Telegram Bot</li>
+            <li>Signing key management terintegrasi</li>
+        </ul>
+        <button class="btn btn-primary" onclick="closeModal('news5Modal');showPage('builder')">🚀 Coba Sekarang</button>
+    </div>
+</div></div>
+
+<!-- BUG EFFECT MODALS -->
+<div id="bugEffectModal" class="modal"><div class="modal-content" style="max-width:400px;text-align:center">
+    <div class="modal-header" id="bugEffectTitle">Bug Effect <span class="modal-close" onclick="closeModal('bugEffectModal')">&times;</span></div>
+    <div class="modal-body" id="bugEffectBody"></div>
+</div></div>
+
+<!-- BSOD OVERLAY -->
+<div id="bsodOverlay" style="display:none;position:fixed;inset:0;background:#0078D4;z-index:99999;color:white;font-family:Segoe UI,sans-serif;padding:60px 40px;overflow:hidden">
+    <div style="font-size:100px;margin-bottom:20px">:(</div>
+    <div style="font-size:24px;font-weight:700;margin-bottom:20px">Your PC ran into a problem and needs to restart. We're just collecting some error info, and then we'll restart for you.</div>
+    <div id="bsodProgress" style="font-size:18px;margin-bottom:20px">0% complete</div>
+    <div style="font-size:14px">For more information about this issue and possible fixes, visit <span style="text-decoration:underline">https://www.windows.com/stopcode</span></div>
+    <div style="font-size:14px;margin-top:20px">Stop code: <strong>SYSTEM_THREAD_EXCEPTION_NOT_HANDLED</strong></div>
+    <button onclick="document.getElementById('bsodOverlay').style.display='none'" style="margin-top:30px;padding:10px 25px;background:white;color:#0078D4;border:none;border-radius:4px;font-size:14px;cursor:pointer;font-weight:700">✕ Close (Prank Mode)</button>
+</div>
+
+<!-- MATRIX CANVAS -->
+<canvas id="matrixCanvas" style="display:none;position:fixed;inset:0;z-index:99998;background:#000"></canvas>
+<div id="matrixStop" style="display:none;position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:99999">
+    <button onclick="stopMatrix()" style="padding:10px 25px;background:var(--danger);color:white;border:none;border-radius:8px;font-size:14px;cursor:pointer;font-weight:700">⛔ Stop Matrix</button>
+</div>
+
+<!-- HACK OVERLAY -->
+<div id="hackOverlay" style="display:none;position:fixed;inset:0;background:#000;z-index:99998;padding:20px;overflow:hidden">
+    <div id="hackOutput" style="font-family:'Courier Prime',monospace;font-size:12px;color:#00ff00;line-height:1.6"></div>
+    <button onclick="stopHack()" style="position:fixed;bottom:20px;right:20px;padding:10px 20px;background:var(--danger);color:white;border:none;border-radius:8px;cursor:pointer;font-weight:700">⛔ Stop</button>
+</div>
+
+<!-- ═══════════════════════════════════════
+     JAVASCRIPT
+═══════════════════════════════════════ -->
+<script>
+// ─── INIT ───
+window.addEventListener('load', () => {
+    document.getElementById('lastLogin').textContent = new Date().toLocaleString('id-ID');
+    initParticles();
+    initTrafficChart();
+    animateStats();
+});
+
+// ─── SIDEBAR ───
+function toggleSidebar() {
+    const sb = document.getElementById('sidebar');
+    const ov = document.getElementById('sidebarOverlay');
+    sb.classList.toggle('show');
+    ov.classList.toggle('show');
+}
+function closeSidebar() {
+    document.getElementById('sidebar').classList.remove('show');
+    document.getElementById('sidebarOverlay').classList.remove('show');
+}
+
+// ─── PAGE NAVIGATION ───
+function showPage(page) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+
+    const pageEl = document.getElementById(page + 'Page');
+    if (pageEl) { pageEl.classList.add('active'); window.scrollTo(0,0); }
+
+    const sideItems = document.querySelectorAll('.sidebar-item');
+    sideItems.forEach(i => { if (i.textContent.toLowerCase().includes(page.replace('bugcenter','bug'))) i.classList.add('active'); });
+
+    const navEl = document.getElementById('nav-' + (page === 'bugcenter' ? 'tools' : page));
+    if (navEl) navEl.classList.add('active');
+
+    closeSidebar();
+}
+
+// ─── MODALS ───
+function openModal(id) {
+    document.getElementById(id).classList.add('show');
+}
+function closeModal(id) {
+    document.getElementById(id).classList.remove('show');
+}
+document.querySelectorAll('.modal').forEach(m => {
+    m.addEventListener('click', e => { if (e.target === m) m.classList.remove('show'); });
+});
+
+// ─── LOGOUT ───
+function logout() {
+    if (confirm('Yakin ingin keluar dari NOXA HUB?')) {
+        alert('Logging out...\nSampai jumpa! 👋');
+    }
+}
+
+// ─── PARTICLES ───
+function initParticles() {
+    const container = document.getElementById('particles');
+    for (let i = 0; i < 20; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        p.style.cssText = `left:${Math.random()*100}%;animation-duration:${8+Math.random()*12}s;animation-delay:${Math.random()*10}s;opacity:${0.2+Math.random()*0.4}`;
+        container.appendChild(p);
+    }
+}
+
+// ─── TRAFFIC CHART ───
+function initTrafficChart() {
+    const days = ['Sen','Sel','Rab','Kam','Jum','Sab','Min'];
+    const vals = [780, 920, 1050, 870, 1100, 1037, 990];
+    const maxVal = Math.max(...vals);
+    const chart = document.getElementById('trafficChart');
+    const xAxis = document.getElementById('chartX');
+    if (!chart) return;
+    chart.innerHTML = '';
+    if (xAxis) xAxis.innerHTML = '';
+    days.forEach((d, i) => {
+        const bar = document.createElement('div');
+        bar.className = 'bar';
+        const h = Math.floor((vals[i] / maxVal) * 95);
+        bar.style.height = h + 'px';
+        bar.innerHTML = `<span class="bar-val">${vals[i]}</span><span class="bar-label">${d}</span>`;
+        chart.appendChild(bar);
+        if (xAxis) { const s = document.createElement('span'); s.textContent = d; xAxis.appendChild(s); }
+    });
+}
+
+// ─── ANIMATE STATS ───
+function animateStats() {
+    const targets = { onlineUsers: 1037, totalMembers: 5921, premiumUsers: 853, activeServers: 32 };
+    Object.entries(targets).forEach(([id, target]) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        let current = 0;
+        const step = Math.ceil(target / 50);
+        const timer = setInterval(() => {
+            current = Math.min(current + step, target);
+            el.textContent = current.toLocaleString('id-ID');
+            if (current >= target) clearInterval(timer);
+        }, 30);
+    });
+}
+
+// ─── VPS ACTIONS ───
+function vpsAction(name, action) {
+    const msgs = { restart: `🔄 ${name} sedang restart...`, stop: `⏹ ${name} dihentikan.`, start: `▶ ${name} dinyalakan!` };
+    alert(msgs[action] || 'Action dilakukan.');
+}
+
+// ─── BUG CENTER ───
+let matrixInterval = null;
+let hackInterval = null;
+let bsodInterval = null;
+let glitchInterval = null;
+
+function runBug(type) {
+    const terminal = document.getElementById('bugTerminal');
+    const log = (msg, cls='') => {
+        const line = document.createElement('div');
+        line.className = 'terminal-line ' + cls;
+        line.textContent = msg;
+        terminal.appendChild(line);
+        terminal.scrollTop = terminal.scrollHeight;
+    };
+
+    if (type === 'stop') {
+        stopAllBugs();
+        terminal.innerHTML = '<div class="terminal-line info">// Semua efek dihentikan.</div>';
+        return;
+    }
+
+    if (type === 'crash') {
+        log('[CRASH] Simulating crash...', 'error');
+        setTimeout(() => { log('[CRASH] Segmentation fault (core dumped)', 'error'); }, 400);
+        setTimeout(() => { log('[CRASH] Process terminated unexpectedly', 'error'); }, 800);
+        setTimeout(() => { log('[CRASH] Error code: 0xDEADBEEF', 'error'); }, 1200);
+        document.body.style.filter = 'invert(1)';
+        setTimeout(() => { document.body.style.filter = ''; }, 2000);
+    }
+
+    else if (type === 'bsod') {
+        log('[BSOD] Blue Screen triggered!', 'warn');
+        const overlay = document.getElementById('bsodOverlay');
+        overlay.style.display = 'block';
+        let p = 0;
+        bsodInterval = setInterval(() => {
+            p += Math.floor(Math.random() * 5) + 1;
+            if (p > 100) { p = 100; clearInterval(bsodInterval); }
+            document.getElementById('bsodProgress').textContent = p + '% complete';
+        }, 150);
+    }
+
+    else if (type === 'matrix') {
+        log('[MATRIX] Digital rain activated!', 'info');
+        const canvas = document.getElementById('matrixCanvas');
+        const stop = document.getElementById('matrixStop');
+        canvas.style.display = 'block';
+        stop.style.display = 'block';
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        const ctx = canvas.getContext('2d');
+        const cols = Math.floor(canvas.width / 16);
+        const drops = Array(cols).fill(1);
+        matrixInterval = setInterval(() => {
+            ctx.fillStyle = 'rgba(0,0,0,0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#0f0';
+            ctx.font = '14px Courier Prime';
+            drops.forEach((y, i) => {
+                const ch = String.fromCharCode(0x30A0 + Math.random() * 96);
+                ctx.fillText(ch, i * 16, y * 16);
+                if (y * 16 > canvas.height && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            });
+        }, 40);
+    }
+
+    else if (type === 'glitch') {
+        log('[GLITCH] Screen glitch effect...', 'warn');
+        let count = 0;
+        glitchInterval = setInterval(() => {
+            document.body.style.transform = `translate(${(Math.random()-0.5)*10}px, ${(Math.random()-0.5)*10}px)`;
+            document.body.style.filter = Math.random() > 0.5 ? 'hue-rotate(90deg)' : '';
+            count++;
+            if (count > 30) { clearInterval(glitchInterval); document.body.style.transform=''; document.body.style.filter=''; }
+        }, 80);
+    }
+
+    else if (type === 'hack') {
+        log('[HACK] Initiating fake hack sequence...', 'info');
+        const overlay = document.getElementById('hackOverlay');
+        overlay.style.display = 'block';
+        const out = document.getElementById('hackOutput');
+        out.innerHTML = '';
+        const lines = [
+            'root@NOXA:~# ./hack --target 192.168.0.1',
+            '[*] Scanning open ports...',
+            '[+] Port 22 (SSH) — OPEN',
+            '[+] Port 80 (HTTP) — OPEN',
+            '[+] Port 443 (HTTPS) — OPEN',
+            '[*] Exploiting CVE-2026-4567...',
+            '[+] Shell obtained: root@target',
+            '[*] Dumping credentials...',
+            '[+] admin:$2y$10$hashed_password',
+            '[+] root:$2y$10$another_hash',
+            '[*] Uploading backdoor.php...',
+            '[+] Backdoor uploaded successfully!',
+            '[!] Covering tracks...',
+            '[+] Access log cleared.',
+            '[*] DISCLAIMER: INI HANYA SIMULASI VISUAL!',
+            '[*] Tidak ada sistem yang diretas.',
+        ];
+        let i = 0;
+        hackInterval = setInterval(() => {
+            if (i >= lines.length) { clearInterval(hackInterval); return; }
+            const div = document.createElement('div');
+            div.textContent = lines[i++];
+            out.appendChild(div);
+            out.scrollTop = out.scrollHeight;
+        }, 300);
+    }
+
+    else if (type === 'virus') {
+        log('[VIRUS] Fake virus alert triggered!', 'error');
+        alert('⚠ VIRUS DETECTED!\n\n🦠 Trojan.Gen.2 ditemukan!\nFile terinfeksi: 24\n\n❌ PERANGKAT DALAM BAHAYA!\n\n(Ini adalah simulasi prank saja 😄)');
+    }
+
+    else if (type === 'battery') {
+        log('[BATTERY] Low battery simulation...', 'warn');
+        document.body.style.opacity = '0.3';
+        alert('🔋 Baterai 0%!\n\nPerangkat akan mati segera...\n\n(Simulasi prank — aman kok!)');
+        setTimeout(() => { document.body.style.opacity = '1'; }, 500);
+    }
+
+    else if (type === 'earthquake') {
+        log('[EARTHQUAKE] Shake effect!', 'warn');
+        let count = 0;
+        const shake = setInterval(() => {
+            document.body.style.transform = `rotate(${(Math.random()-0.5)*3}deg) translate(${(Math.random()-0.5)*15}px,${(Math.random()-0.5)*15}px)`;
+            count++;
+            if (count > 40) { clearInterval(shake); document.body.style.transform = ''; }
+        }, 50);
+    }
+
+    else if (type === 'nuke') {
+        log('[NUKE] Nuke launch sequence activated!', 'error');
+        let cnt = 5;
+        const nuke = setInterval(() => {
+            log(`[NUKE] T-${cnt} seconds...`, 'error');
+            cnt--;
+            if (cnt < 0) {
+                clearInterval(nuke);
+                log('[NUKE] 💥 BOOM! (Simulasi saja, santai!)', 'warn');
+                document.body.style.background = 'white';
+                setTimeout(() => { document.body.style.background = ''; }, 500);
+            }
+        }, 1000);
+    }
+}
+
+function stopAllBugs() {
+    if (matrixInterval) { clearInterval(matrixInterval); matrixInterval = null; }
+    if (hackInterval) { clearInterval(hackInterval); hackInterval = null; }
+    if (bsodInterval) { clearInterval(bsodInterval); bsodInterval = null; }
+    if (glitchInterval) { clearInterval(glitchInterval); glitchInterval = null; }
+    document.getElementById('matrixCanvas').style.display = 'none';
+    document.getElementById('matrixStop').style.display = 'none';
+    document.getElementById('hackOverlay').style.display = 'none';
+    document.getElementById('bsodOverlay').style.display = 'none';
+    document.body.style = '';
+}
+function stopMatrix() { if (matrixInterval) { clearInterval(matrixInterval); matrixInterval = null; } document.getElementById('matrixCanvas').style.display='none'; document.getElementById('matrixStop').style.display='none'; }
+function stopHack() { if (hackInterval) { clearInterval(hackInterval); hackInterval = null; } document.getElementById('hackOverlay').style.display='none'; }
+
+// ─── TOOLS ───
+function checkIP() {
+    const ip = document.getElementById('ipInput').value.trim() || '8.8.8.8';
+    const out = document.getElementById('ipOutput');
+    out.innerHTML = `<span class="terminal-line info">Checking ${ip}...</span>`;
+    setTimeout(() => {
+        out.innerHTML = `
+<div class="terminal-line">IP Address : ${ip}</div>
+<div class="terminal-line">Hostname   : dns.google</div>
+<div class="terminal-line">ISP        : Google LLC</div>
+<div class="terminal-line">Country    : United States 🇺🇸</div>
+<div class="terminal-line">City       : Mountain View, CA</div>
+<div class="terminal-line">Timezone   : America/Los_Angeles</div>
+<div class="terminal-line">Org        : AS15169 Google LLC</div>
+<div class="terminal-line info">Ping       : 24ms ✓</div>`;
+    }, 800);
+}
+
+function runPing() {
+    const host = document.getElementById('pingHost').value.trim() || 'noxa.id';
+    const count = parseInt(document.getElementById('pingCount').value);
+    const out = document.getElementById('pingOutput');
+    out.innerHTML = `<div class="terminal-line info">PING ${host} (103.55.12.8): 56 data bytes</div>`;
+    let i = 0;
+    const iv = setInterval(() => {
+        if (i >= count) {
+            const avg = (Math.random()*20+10).toFixed(1);
+            out.innerHTML += `<div class="terminal-line info">--- ${host} ping statistics ---</div><div class="terminal-line">${count} packets transmitted, ${count} received, 0% loss</div><div class="terminal-line">rtt min/avg/max = ${(avg-5).toFixed(1)}/${avg}/${(parseFloat(avg)+8).toFixed(1)} ms</div>`;
+            clearInterval(iv);
+        } else {
+            const ms = (Math.random()*20+10).toFixed(2);
+            out.innerHTML += `<div class="terminal-line">64 bytes from 103.55.12.8: icmp_seq=${i} ttl=118 time=${ms} ms</div>`;
+            i++;
+        }
+        out.scrollTop = out.scrollHeight;
+    }, 400);
+}
+
+function generatePass() {
+    const len = parseInt(document.getElementById('passLength').value) || 16;
+    const upper = document.getElementById('useUpper').checked;
+    const lower = document.getElementById('useLower').checked;
+    const num = document.getElementById('useNum').checked;
+    const sym = document.getElementById('useSym').checked;
+    let chars = '';
+    if (upper) chars += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    if (lower) chars += 'abcdefghijklmnopqrstuvwxyz';
+    if (num) chars += '0123456789';
+    if (sym) chars += '!@#$%^&*()_+-=[]{}';
+    if (!chars) { alert('Pilih setidaknya satu opsi!'); return; }
+    let pass = '';
+    for (let i = 0; i < len; i++) pass += chars[Math.floor(Math.random() * chars.length)];
+    document.getElementById('passOutput').innerHTML = `<div class="terminal-line info">${pass}</div><div class="terminal-line">Length: ${len} chars | Strength: ${len >= 16 ? '🟢 Strong' : '🟡 Medium'}</div>`;
+}
+
+function encodeB64() {
+    try {
+        const v = document.getElementById('b64Input').value;
+        document.getElementById('b64Output').innerHTML = `<div class="terminal-line info">ENCODED:</div><div class="terminal-line">${btoa(unescape(encodeURIComponent(v)))}</div>`;
+    } catch(e) { document.getElementById('b64Output').innerHTML = `<div class="terminal-line error">Error: ${e.message}</div>`; }
+}
+
+function decodeB64() {
+    try {
+        const v = document.getElementById('b64Input').value;
+        document.getElementById('b64Output').innerHTML = `<div class="terminal-line info">DECODED:</div><div class="terminal-line">${decodeURIComponent(escape(atob(v)))}</div>`;
+    } catch(e) { document.getElementById('b64Output').innerHTML = `<div class="terminal-line error">Error: Invalid Base64 input!</div>`; }
+}
+
+function generateQR() {
+    const v = document.getElementById('qrInput').value.trim() || 'https://noxa.id';
+    const size = 150;
+    document.getElementById('qrOutput').innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(v)}&size=${size}x${size}&color=00d4ff&bgcolor=0f1428" style="border-radius:8px;border:2px solid var(--accent)" alt="QR Code"><div style="font-size:12px;color:var(--text-dim);margin-top:8px">${v}</div>`;
+}
+
+function generateHash() {
+    const input = document.getElementById('hashInput').value;
+    if (!input) { document.getElementById('hashOutput').innerHTML = '<div class="terminal-line error">Input kosong!</div>'; return; }
+    // Simple simulated hash
+    const fakeMD5 = [...input].reduce((h,c) => (h * 31 + c.charCodeAt(0)) & 0xFFFFFFFF, 0).toString(16).padStart(8,'0').repeat(4);
+    const fakeSHA1 = [...input].reduce((h,c) => (h * 37 + c.charCodeAt(0)) & 0xFFFFFFFF, 1).toString(16).padStart(8,'0').repeat(5);
+    document.getElementById('hashOutput').innerHTML = `<div class="terminal-line info">MD5:</div><div class="terminal-line">${fakeMD5.slice(0,32)}</div><div class="terminal-line info">SHA-1:</div><div class="terminal-line">${fakeSHA1.slice(0,40)}</div><div class="terminal-line info">SHA-256 (simulated):</div><div class="terminal-line">${(fakeMD5+fakeSHA1).slice(0,64)}</div>`;
+}
+
+// ─── CALCULATOR ───
+let calcExpr = '';
+function calcNum(n) { calcExpr += n; document.getElementById('calcDisplay').textContent = calcExpr; }
+function calcOp(o) { calcExpr += o; document.getElementById('calcDisplay').textContent = calcExpr; }
+function calcClear() { calcExpr = ''; document.getElementById('calcDisplay').textContent = '0'; }
+function calcEquals() {
+    try {
+        const r = Function('"use strict";return (' + calcExpr + ')')();
+        document.getElementById('calcDisplay').textContent = parseFloat(r.toFixed(10));
+        calcExpr = String(parseFloat(r.toFixed(10)));
+    } catch(e) { document.getElementById('calcDisplay').textContent = 'Error'; calcExpr = ''; }
+}
+
+// ─── CONVERTER ───
+function doConvert() {
+    const type = document.getElementById('convType').value;
+    const val = parseFloat(document.getElementById('convInput').value);
+    const out = document.getElementById('convOutput');
+    if (isNaN(val)) { out.innerHTML = '<div class="terminal-line info">// Masukkan nilai angka</div>'; return; }
+    let result = '';
+    if (type === 'bytes') {
+        result = `${val} Bytes\n= ${(val/1024).toFixed(4)} KB\n= ${(val/1048576).toFixed(6)} MB\n= ${(val/1073741824).toFixed(8)} GB\n= ${(val/1099511627776).toFixed(10)} TB`;
+    } else if (type === 'px') {
+        result = `${val} px\n= ${(val/16).toFixed(4)} rem (16px base)\n= ${(val/16).toFixed(4)} em\n= ${(val/3.78).toFixed(4)} mm\n= ${(val/96).toFixed(4)} in`;
+    } else if (type === 'time') {
+        result = `${val} ms\n= ${(val/1000).toFixed(4)} s\n= ${(val/60000).toFixed(6)} min\n= ${(val/3600000).toFixed(8)} h`;
+    }
+    out.innerHTML = result.split('\n').map(l => `<div class="terminal-line">${l}</div>`).join('');
+}
+
+// ─── JSON ───
+function formatJSON() {
+    try {
+        const v = document.getElementById('jsonInput').value;
+        const parsed = JSON.parse(v);
+        document.getElementById('jsonOutput').innerHTML = `<div class="terminal-line info">✓ Valid JSON</div><div class="terminal-line">${JSON.stringify(parsed, null, 2).replace(/\n/g,'<br>').replace(/ /g,'&nbsp;')}</div>`;
+    } catch(e) { document.getElementById('jsonOutput').innerHTML = `<div class="terminal-line error">✗ Invalid JSON: ${e.message}</div>`; }
+}
+function minifyJSON() {
+    try {
+        const v = document.getElementById('jsonInput').value;
+        document.getElementById('jsonOutput').innerHTML = `<div class="terminal-line">${JSON.stringify(JSON.parse(v))}</div>`;
+    } catch(e) { document.getElementById('jsonOutput').innerHTML = `<div class="terminal-line error">✗ Invalid JSON: ${e.message}</div>`; }
+}
+function validateJSON() {
+    try {
+        JSON.parse(document.getElementById('jsonInput').value);
+        document.getElementById('jsonOutput').innerHTML = `<div class="terminal-line info">✅ JSON Valid! Tidak ada syntax error.</div>`;
+    } catch(e) { document.getElementById('jsonOutput').innerHTML = `<div class="terminal-line error">❌ Invalid JSON: ${e.message}</div>`; }
+}
+
+// ─── VPS CONSOLE ───
+const vpsCommands = {
+    'top': 'top - 10:42:31 up 15 days, CPU: 34.2%us, 1.1%sy\nTasks: 89 total, 2 running, 87 sleeping\nMem: 8192MB total, 3686MB used, 4506MB free',
+    'df -h': 'Filesystem      Size  Used Avail Use%\n/dev/sda1       100G   38G   62G  38%\ntmpfs           4.0G     0  4.0G   0%',
+    'free -m': '              total    used    free\nMem:           8192    3686    4506\nSwap:          2048     256    1792',
+    'uptime': '10:42:31 up 15 days, 3:27, 1 user, load average: 0.34, 0.41, 0.38',
+    'ls -la': 'total 48\ndrwxr-xr-x  8 root root 4096 May 31 10:00 .\ndrwxr-xr-x 22 root root 4096 May 31 10:00 ..\ndrwxr-xr-x  3 root root 4096 May 31 09:00 noxa\ndrwxr-xr-x  2 root root 4096 May 31 08:00 logs',
+};
+
+function runVpsCmd() {
+    const cmd = document.getElementById('vpsCmd').value.trim();
+    if (!cmd) return;
+    const console_ = document.getElementById('vpsConsole');
+    const response = vpsCommands[cmd] || `bash: ${cmd}: command not found`;
+    console_.innerHTML += `\n<span style="color:var(--accent)">root@vps-01:~# ${cmd}</span>\n<span>${response}</span>\n`;
+    console_.scrollTop = console_.scrollHeight;
+    document.getElementById('vpsCmd').value = '';
+}
+function quickCmd(cmd) {
+    document.getElementById('vpsCmd').value = cmd;
+    runVpsCmd();
+}
+
+// ─── BUILDER ───
+function startBuild() {
+    const name = document.getElementById('buildProjectName').value.trim() || 'my_app';
+    const platform = document.getElementById('buildPlatform').value;
+    const mode = document.getElementById('buildMode').value;
+    alert(`🚀 Build dimulai!\n\nProject: ${name}\nPlatform: ${platform}\nMode: ${mode}\n\nEstimasi: 4-8 menit\nNotifikasi akan dikirim via Telegram.`);
+}
+
+// ─── FINANCE ───
+function processTopup() {
+    const amount = document.getElementById('topupAmount').value;
+    if (!amount || amount < 10000) { alert('Masukkan jumlah minimal Rp 10.000!'); return; }
+    alert(`✅ Top Up Rp ${parseInt(amount).toLocaleString('id-ID')} berhasil!\n\nSaldo akan diperbarui dalam 1-3 menit setelah pembayaran dikonfirmasi.`);
+    closeModal('topupModal');
+}
+</script>
+</body>
+</html>
